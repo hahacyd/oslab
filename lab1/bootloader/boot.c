@@ -3,10 +3,12 @@
 #define SECTSIZE 512
 
 void bootMain(void) {
+	void (*elf)(void);
 	unsigned int entry = 0x8c00;
-	void (*elf)();
 	// loading sector 1 to memory
 	readSect((void*)entry,1);
+
+	elf = (void*)entry;
 	elf();
 }
 
