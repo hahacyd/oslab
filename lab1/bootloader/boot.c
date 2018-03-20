@@ -4,7 +4,7 @@
 
 void bootMain(void) {
 	unsigned int entry = 0x8c00;
-	void (*elf)((void*)entry);
+	void (*elf)();
 	// loading sector 1 to memory
 	readSect((void*)entry,1);
 	elf();
