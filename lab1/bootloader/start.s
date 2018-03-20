@@ -2,10 +2,27 @@
 
 .global start
 start:
+	movw $message, %ax
+	movw %ax, %bp
+	movw $23, %cx
+	movw $0x1301, %ax
+	movw $0x000c, %bx
+	movw $0x0900, %dx     #print at 8s rows and 0s lines
+	int $0x10
+
+message:
+	.string "Hello World! Let`s go:"
+
+	/*movl $((80 * 5 + 0) * 2), %edi
+	movb $0x0c, %ah
+	movb $72, %al          #72 is 'H' `s ascii encode,
+	movw %ax, %gs:(%edi)           #write graph memory
+	*/
+
 	cli            #close interrupt
 	inb $0x92, %al   #launch A20 bus
 	orb $0x02, %al
-	outb $al, $0x92
+	outb %al, $0x92
 
 	data32 addr32 lgdt gdtDesc   #loac GDTR
 	
@@ -19,11 +36,11 @@ start32:
 	
 	movw $0, %eax
 
-	movw %eax, %ds
-	movw %eax, %es
-	movw %eax, %fs
-	movw %eax, %gs
-	movw %eax, %ss
+	movw %ax, %ds
+	movw %ax, %es
+	movw %ax, %fs
+	movw %ax, %gs
+	movw %ax, %ss
 
 	jmp bootMain      #jmp to bootMain function,defined by boot.c
 .p2align 2
