@@ -16,7 +16,7 @@ void waitDisk(void) { // waiting for disk
 	while((inByte(0x1F7) & 0xC0) != 0x40);
 }
 
-void readSect(void *dst, int offset) { // reading one sector of disk
+void readSect(void *dst, int offset) {       // reading one sector of disk
 	int i;
 	waitDisk();
 	outByte(0x1F2, 1);
