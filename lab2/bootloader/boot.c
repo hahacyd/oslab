@@ -4,6 +4,35 @@
 
 void bootMain(void) {
 	/* 加载内核至内存，并跳转执行 */
+	void(*kernel)(void);
+	unsigned char* buffer = (unsigned char*)0x3000000;
+	for(int i = 1;i <= 200;i++){
+		readSect((void*)buffer + 512 * (i - 1),i);
+	}
+	struct ELFHeader* elf = (void*)buffer;	
+	struct ProgramHeader* ph = (void*)elf + elf->phoff;
+	struct ProgramHeader* eph = ph + elf->phnum;
+	int dest = 0,src = 0;
+	//int phnum = elf->phnum;
+	for(;ph < eph;ph++){
+		if(ph->type == 1){
+			dest = ph->vaddr;
+			src = (int)elf + ph->off;
+			int filesz = ph->filesz;
+			while(dest - ph->vaddr < filesz){
+				*(unsigned char*)(dest) = *(unsigned char*)(src);
+				dest++;
+				src++;
+			}
+			int memsz = ph->memsz;
+			while(dest - ph->vaddr < memsz){
+				*(unsigned char*)(dest) = '\0';
+				dest++;
+			}
+		}
+	}
+	kernel = (void*)elf->entry;
+	kernel();
 }
 
 void waitDisk(void) { // waiting for disk
