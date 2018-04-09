@@ -39,6 +39,9 @@ void initSeg() {
 	/*
 	 * 初始化TSS
 	 */
+
+	
+	//tss.esp 
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
 	/*设置正确的段寄存器*/
@@ -59,5 +62,35 @@ void enterUserSpace(uint32_t entry) {
 void loadUMain(void) {
 
 	/*加载用户程序至内存*/
+	void(*user)(void);
+	unsigned char* buffer = (unsigned char*)0x3000000;
+	for(int i = 1;i <= 200;i++){
+		readSect((void*)buffer + 512 * (i - 1),i + 200);
+	}
+	struct ELFHeader* elf = (void*)buffer;	
+	user = (void*)elf->entry;
 
+	struct ProgramHeader* ph = (void*)elf + elf->phoff;
+	struct ProgramHeader* eph = ph + elf->phnum;
+	int dest = 0,src = 0;
+	//int phnum = elf->phnum;
+	for(;ph < eph;ph++){
+		if(ph->type == 1){
+			dest = ph->vaddr;
+			src = (int)elf + ph->off;
+			int filesz = ph->filesz;
+			while(dest - ph->vaddr < filesz){
+				*(unsigned char*)(dest) = *(unsigned char*)(src);
+				dest++;
+				src++;
+			}
+			int memsz = ph->memsz;
+			while(dest - ph->vaddr < memsz){
+				*(unsigned char*)(dest) = '\0';
+				dest++;
+			}
+		}
+	}
+	user = (void*)elf->entry;
+	user();
 }
