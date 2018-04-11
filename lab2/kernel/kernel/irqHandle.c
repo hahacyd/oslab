@@ -53,6 +53,8 @@ static int display(char x){
 	return 1;
 }
 int fs_write(int fd,char* buf,int len){
+	asm volatile("movl %0, %%eax":: "r"(KSEL(SEG_VEDIO)):"eax");
+	asm volatile("movw %ax, %gs");
 	assert(fd == 1);
 	printkernel(buf,len);
 	//putChar(*buf);
@@ -72,8 +74,12 @@ static void sys_write(struct TrapFrame *tf){
 }
 void syscallHandle(struct TrapFrame *tf) {
 	/* 实现系统调用*/
-	switch(tf->eax){
-		case 4 : sys_write(tf);
+
+	//asm volatile("mov %0,%%gs:" ::"a"(6 << 3));
+	switch (tf->eax)
+	{
+	case 4:
+		sys_write(tf);
 		break;
 		default:{
 			return;

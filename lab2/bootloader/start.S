@@ -19,15 +19,15 @@ start32:
 	movw $(2 << 3), %ax
 	movw %ax, %ds                   #data sreg <= ax
 	
-	movw $(2 << 3), %ax
-	movw %ax, %es                   #Extend segement sreg <= ax
+#	movw $(2 << 3), %ax
+#	movw %ax, %es                   #Extend segement sreg <= ax
 	
-	movw %ax, %ss		            #stack sreg <= ax
+#	movw %ax, %ss		            #stack sreg <= ax
 
-	movw %ax, %fs
+#	movw %ax, %fs
 
-	movw $(3 << 3), %ax
-	movw %ax, %gs
+#	movw $(3 << 3), %ax
+#	movw %ax, %gs
 
 #	#Set up a stack for C code
 
@@ -45,8 +45,8 @@ gdt: # 8 bytes for each table entry, at least 1 entry
 	.word 0xffff, 0             #data sreg descriptor
 	.byte 0,0x92,0xcf,0
 
-	.word 0xffff, 0x8000        #video sreg descriptor
-	.byte 0x0b,0x92,0xcf,0
+#	.word 0xffff, 0x8000        #video sreg descriptor
+#	.byte 0x0b,0x92,0xcf,0
 gdtDesc: # 6 bytes in total
 	.word (gdtDesc - gdt -1)
 	.long gdt

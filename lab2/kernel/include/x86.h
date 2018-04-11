@@ -6,6 +6,8 @@
 #include "x86/io.h"
 #include "x86/irq.h"
 
+
+
 void initSeg(void);
 void loadUMain(void);
 void enterUserSpace(uint32_t entry);
