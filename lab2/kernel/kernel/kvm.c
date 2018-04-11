@@ -26,36 +26,79 @@ void readSect(void *dst, int offset) {
 		((int *)dst)[i] = inLong(0x1F0);
 	}
 }
-
+#define SEG_VEDIO 6
 void initSeg() {
+	/*
+
+	.word 0xffff, 0             #code sreg descriptor
+	.byte 0,0x9a,0xcf,0
+
+	.word 0xffff, 0             #data sreg descriptor
+	.byte 0,0x92,0xcf,0
+
+	.word 0xffff, 0x8000        #video sreg descriptor
+	.byte 0x0b,0x92,0xcf,0
+	*/
 	gdt[SEG_KCODE] = SEG(STA_X | STA_R, 0,       0xffffffff, DPL_KERN);
 	gdt[SEG_KDATA] = SEG(STA_W,         0,       0xffffffff, DPL_KERN);
 	gdt[SEG_UCODE] = SEG(STA_X | STA_R, 0,       0xffffffff, DPL_USER);
 	gdt[SEG_UDATA] = SEG(STA_W,         0,       0xffffffff, DPL_USER);
 	gdt[SEG_TSS] = SEG16(STS_T32A,      &tss, sizeof(TSS)-1, DPL_KERN);
 	gdt[SEG_TSS].s = 0;
+	gdt[SEG_VEDIO] = SEG(STA_W, 0x0b8000, 0xffffffff, DPL_KERN);
 	setGdt(gdt, sizeof(gdt));
 
 	/*
 	 * 初始化TSS
 	 */
 
-	
-	//tss.esp 
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
+
+	//tss.ss0 = KSEL(SEG_KDATA);
+	//tss.esp0 = 0x500000;
+
+	/*uint16_t old_cs = 0,old_ss = 0;
+	uint32_t old_eip = 0, old_esp = 0;
+	uint16_t target_cs = IDT[]*/
 
 	/*设置正确的段寄存器*/
 
-	lLdt(0);
-	
-}
+	/*asm volatile("mov %0,%%eax;" ::"i"((uint32_t)KSEL(SEG_KDATA)));
+	asm volatile("movw %ax,%ds;");
 
+	asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KCODE)));
+	asm volatile("movw %ax,%cs;");
+
+	asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KDATA)));
+	asm volatile("movw %ax,%es;");
+
+	asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_VEDIO)));
+	asm volatile("movw %ax,%gs;");
+	*/
+	lLdt(0);
+}
+#define SELECTOR(ss) (ss>>3)
 void enterUserSpace(uint32_t entry) {
 	/*
 	 * Before enter user space 
 	 * you should set the right segment registers here
 	 * and use 'iret' to jump to ring3
 	 */
+	uint16_t old_cs = 0;
+	uint16_t cs = 0;
+
+	asm volatile("movw %%cs,%0;"
+				 : "=r"(old_cs));
+	/*asm volatile("popl %eip;");
+	asm volatile("popw %cs;");
+	asm volatile("popl %eflags;");*/
+
+	asm volatile("movw %%cs,%0;": "=r"(cs));
+
+	if(gdt[SELECTOR(old_cs)].dpl < gdt[SELECTOR(cs)].dpl){  //if true,surely have syscall,
+		//asm volatile("pop %%esp;");
+		//asm volatile("pop %%ss;");
+	}/**/
 	asm volatile("iret");
 }
 

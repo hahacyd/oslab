@@ -2,10 +2,14 @@
 #include "device.h"
 
 //static char *i2A(int a);
+#define COL_SIZE 80
 void syscallHandle(struct TrapFrame *tf);
 
 void GProtectFaultHandle(struct TrapFrame *tf);
-
+static void video_print(int row, int col, char c);
+static int display(char x);
+//static int count = 0;
+static int sys_row = 0,sys_col = 0;
 void irqHandle(struct TrapFrame *tf) {
 	/*
 	 * 中断处理程序
@@ -24,16 +28,27 @@ void irqHandle(struct TrapFrame *tf) {
 		default:assert(0);
 	}
 }
-typedef enum {
-	str = 0,
-	dec = 1,
-	oct = 2,
-	null=88
-} Types;
 int printkernel(char *buf, int len)
 {
 	for(;*buf != '\0';buf++){
 		putChar(*buf);
+		display(*buf);
+	}
+	return 1;
+}
+static int display(char x){
+
+	if(x == '\n'){
+		sys_col = 0;
+		sys_row += 1;
+	}
+	else{
+		video_print(sys_row,sys_col,x);
+		sys_col += 1;
+	}
+	if(COL_SIZE == sys_col){
+		sys_col = 0;
+		sys_row += 1;
 	}
 	return 1;
 }
@@ -64,6 +79,7 @@ void syscallHandle(struct TrapFrame *tf) {
 			return;
 		}/**/
 	}
+	//enterUserSpace(1);
 }
 
 void GProtectFaultHandle(struct TrapFrame *tf){
@@ -78,3 +94,14 @@ void GProtectFaultHandle(struct TrapFrame *tf){
 	} while (a /= 10);
 	return p;
 }*/
+#define SELECTOR(ss) (ss>>3)
+static void video_print(int row, int col, char c) {
+	asm ("movl %0, %%edi;"			: :"r"(((80 * row + col) * 2))  :"%edi");
+	asm ("movw %0, %%eax;"			: :"r"(0x0c00|c) 				:"%eax");
+	asm ("movw %%ax, %%gs:(%%edi);" : : 							:"%edi");
+}
+void start_into_kernel(uint16_t irq){
+	//uint16_t old_cs = 0,old_ss = 0;
+	//uint32_t old_eip = 0, old_esp = 0;
+	//uint16_t target_cs = IDT[irq].; /**/
+}

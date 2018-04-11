@@ -8,5 +8,5 @@
 
 void initSeg(void);
 void loadUMain(void);
-
+void enterUserSpace(uint32_t entry);
 #endif

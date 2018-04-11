@@ -17,14 +17,14 @@ start:
 start32:
 	                                #from pa: kernel/start/start.S
 	movw $(2 << 3), %ax
-#	movw %ax, %ds                   #data sreg <= ax
+	movw %ax, %ds                   #data sreg <= ax
 	
-#	movw $(2 << 3), %ax
-#	movw %ax, %es                   #Extend segement sreg <= ax
+	movw $(2 << 3), %ax
+	movw %ax, %es                   #Extend segement sreg <= ax
 	
 	movw %ax, %ss		            #stack sreg <= ax
 
-#	movw %ax, %fs
+	movw %ax, %fs
 
 	movw $(3 << 3), %ax
 	movw %ax, %gs
