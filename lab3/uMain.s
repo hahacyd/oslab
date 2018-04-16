@@ -1,5 +1,5 @@
 
-uMain.elf:     file format elf32-i386
+app/uMain.elf:     file format elf32-i386
 
 
 Disassembly of section .text:
