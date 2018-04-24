@@ -35,8 +35,10 @@ static void setTrap(struct GateDescriptor *ptr, uint32_t selector, uint32_t offs
 void irqEmpty();
 void irqGProtectFault();
 void irqSyscall();
+void irqTime();
 
-void initIdt() {
+void initIdt()
+{
 	int i;
 	/* 为了防止系统异常终止，所有irq都有处理函数(irqEmpty)。 */
 	for (i = 0; i < NR_IRQ; i ++) {
@@ -51,6 +53,8 @@ void initIdt() {
 	
 	setIntr(idt + 0x80, SEG_KCODE, (uint32_t)irqSyscall, DPL_USER); // for int 0x80, interrupt vector is 0x80, Interruption is disabled
 
+	setIntr(idt + 0x20, SEG_KCODE, (uint32_t)irqTime, DPL_KERN);
 	/* 写入IDT */
 	saveIdt(idt, sizeof(idt));
+
 }

@@ -50,6 +50,15 @@ typedef enum {
 	word = 3,
 	null = 88
 } Types;
+int fork(){
+	return 0;
+}
+int sleep(int time){
+	return 0;
+}
+int exit(){
+	return 0;
+}
 void printf(const char *format, ...)
 {
 	int buf_ptr = 0;

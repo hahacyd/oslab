@@ -3,4 +3,7 @@
 
 void printf(const char *format,...);
 void fs_write(int fd,const char* address,int length);
+int fork();
+int sleep();
+int exit();
 #endif

@@ -6,9 +6,12 @@
 #include "x86/io.h"
 #include "x86/irq.h"
 
-
+#include "x86/sys_write.h"
+#include "x86/sche.h"
 
 void initSeg(void);
 void loadUMain(void);
 void enterUserSpace(uint32_t entry);
+
+
 #endif

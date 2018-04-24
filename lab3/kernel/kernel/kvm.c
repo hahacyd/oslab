@@ -1,6 +1,6 @@
 #include "x86.h"
 #include "device.h"
-
+ProcessTable pcb[MAX_PCB_NUM];
 SegDesc gdt[NR_SEGMENTS];
 TSS tss;
 
@@ -51,7 +51,9 @@ void initSeg() {
 	/*
 	 * 初始化TSS
 	 */
-	tss.esp0 = 0x500000;   // set kernel esp to 0x500,000
+	//start init idle pcb
+	//tss.esp0 = (uint32_t)pcb[0].stack;
+	tss.esp0 = 0x500000; // set kernel esp to 0x500,000
 	tss.ss0  = KSEL(SEG_KDATA);
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
@@ -102,12 +104,14 @@ void enterUserSpace(uint32_t entry) {
 		//asm volatile("pop %%ss;");
 	}*/
 	//asm volatile("pushl %esp");
+
 	asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss
 	asm volatile("pushl %0":: "r"(128 << 20));			// %esp 128MB
 	asm volatile("pushfl"); //push eflags
 	asm volatile("pushl %0;" ::"r"(USEL(SEG_UCODE)));
 	asm volatile("pushl %0;" ::"r"(entry));
 	asm volatile("iret");
+
 }
 
 void loadUMain(void) {

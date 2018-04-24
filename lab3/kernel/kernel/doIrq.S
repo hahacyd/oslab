@@ -17,8 +17,15 @@ irqSyscall:
 	pushl $0x80 // push interrupt vector into kernel stack
 	jmp asmDoIrq
 
+.global irqTime
+irqTime:
+	pushl $0 // push dummy error code
+	pushl $0x20 // push interrupt vector into kernel stack
+	jmp asmDoIrq
+
 .global asmDoIrq
 asmDoIrq:
+#	call disableInterrupt
 	pushal // push process state into kernel stack
 	pushl %esp
 	call irqHandle

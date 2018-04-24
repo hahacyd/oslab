@@ -49,7 +49,8 @@ struct TrapFrame {
 
 Refer: en.cppreference.com/w/cpp/language/bit_field
 */
-struct SegDesc {
+struct SegDesc
+{
 	uint32_t lim_15_0 : 16;  // Low bits of segment limit
 	uint32_t base_15_0 : 16; // Low bits of segment base address
 	uint32_t base_23_16 : 8; // Middle bits of segment base address
