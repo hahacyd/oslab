@@ -8,6 +8,10 @@
 
 #include "x86/sys_write.h"
 #include "x86/sche.h"
+#include "x86/debug.h"
+//void printk(const char *format, ...);
+
+
 
 void initSeg(void);
 void loadUMain(void);

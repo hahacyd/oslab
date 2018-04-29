@@ -1,6 +1,6 @@
 #include "x86.h"
 #include "device.h"
-ProcessTable pcb[MAX_PCB_NUM];
+//ProcessTable pcb[MAX_PCB_NUM];
 SegDesc gdt[NR_SEGMENTS];
 TSS tss;
 
@@ -52,9 +52,17 @@ void initSeg() {
 	 * 初始化TSS
 	 */
 	//start init idle pcb
+	
 	//tss.esp0 = (uint32_t)pcb[0].stack;
-	tss.esp0 = 0x500000; // set kernel esp to 0x500,000
-	tss.ss0  = KSEL(SEG_KDATA);
+	LOG("kernel stack address = %x\n", (uint32_t)pcb[0].stack);
+	LOG("pcb address = %x\n", (uint32_t)pcb);
+
+	//tss.esp0 = 0x500000; // set kernel esp to 0x500,000
+	init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
+	tss.esp0 = pcb[0].tf.esp;
+	
+	tss.ss0 = pcb[0].tf.ss;
+	
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
 
@@ -83,33 +91,12 @@ void initSeg() {
 }
 #define SELECTOR(ss) (ss>>3)
 void enterUserSpace(uint32_t entry) {
-	/*
-	 * Before enter user space 
-	 * you should set the right segment registers here
-	 * and use 'iret' to jump to ring3
-	 */
-	/*uint16_t old_cs = 0;
-	uint16_t cs = 0;
-
-	asm volatile("movw %%cs,%0;"
-				 : "=r"(old_cs));
-	asm volatile("popl %eip;");
-	asm volatile("popw %cs;");
-	asm volatile("popl %eflags;");
-
-	asm volatile("movw %%cs,%0;": "=r"(cs));
-
-	if(gdt[SELECTOR(old_cs)].dpl < gdt[SELECTOR(cs)].dpl){  //if true,surely have syscall,
-		//asm volatile("pop %%esp;");
-		//asm volatile("pop %%ss;");
-	}*/
-	//asm volatile("pushl %esp");
 
 	asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss
 	asm volatile("pushl %0":: "r"(128 << 20));			// %esp 128MB
-	asm volatile("pushfl"); //push eflags
-	asm volatile("pushl %0;" ::"r"(USEL(SEG_UCODE)));
-	asm volatile("pushl %0;" ::"r"(entry));
+	asm volatile("pushfl");    //push eflags
+	asm volatile("pushl %0;" ::"r"(USEL(SEG_UCODE)));   //push user cs
+	asm volatile("pushl %0;" ::"r"(entry));    //push eip
 	asm volatile("iret");
 
 }

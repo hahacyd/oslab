@@ -12,7 +12,7 @@ typedef struct TrapFrame2
     uint32_t eip, cs, eflags, esp, ss;
 } TrapFrame2;
 //below defines is for Process state
-#define RUNABLE 1
+#define RUNNABLE 1
 #define RUNNING 2
 #define BLOCKED 0
 #define DEAD -1
@@ -26,7 +26,9 @@ typedef struct ProcessTable
     int state;
     int timeCount;
     int sleeptime;
+
     uint32_t pid;
+    uint32_t pre_pid,next_pid;
 } ProcessTable;
 //static uint32_t current_num_pid = 0;
 
@@ -35,9 +37,12 @@ typedef struct Pcb_ptr
     ProcessTable *pcb_pre, *pcb_next;
     uint32_t pcb_no;
 } Pcb_ptr;
+ProcessTable pcb[MAX_PCB_NUM];
+int32_t put_into_running();
+int32_t put_into_runnable();
+int32_t put_into_dead();
 
-int put_into_running(ProcessTable* x);
-int put_into_runnable();
-int put_into_dead();
+void init_pcb();
 
+int32_t init_kernel_pcb(uint32_t ss0, uint32_t esp0);
 #endif

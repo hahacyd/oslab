@@ -2,9 +2,11 @@
 #include "x86.h"
 #include "device.h"
 
+
 void kEntry(void) {
 
 	initTimer();
+	init_pcb();
 
 	initSerial();// initialize serial port
 	initIdt(); // initialize idt
