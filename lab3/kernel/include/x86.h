@@ -6,7 +6,7 @@
 #include "x86/io.h"
 #include "x86/irq.h"
 
-#include "x86/sys_write.h"
+#include "sys_call/sys_write.h"
 #include "x86/sche.h"
 #include "x86/debug.h"
 //void printk(const char *format, ...);

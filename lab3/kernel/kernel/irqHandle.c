@@ -7,7 +7,7 @@ void syscallHandle(struct TrapFrame *tf);
 void timeHandle(struct TrapFrame *tf);
 void GProtectFaultHandle(struct TrapFrame *tf);
 //static void print_char(int row, int col, char c);
-
+extern int32_t current_running_pid;
 void irqHandle(struct TrapFrame *tf)
 {
 	/*
@@ -15,7 +15,9 @@ void irqHandle(struct TrapFrame *tf)
 	 */
 	/* Reassign segment register */
 	//putChar('x');
-	disableInterrupt();   //when cpu is handling interrupt,ignore other interrupt;
+	pcb[current_running_pid].tf = *(TrapFrame2 *)tf;
+
+	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
 	switch (tf->irq)
 	{
 	case -1:
@@ -33,6 +35,8 @@ void irqHandle(struct TrapFrame *tf)
 	default:
 		assert(0);
 	}
+	//this will screctly change process context by change current_running_pid;
+	*(TrapFrame2 *)tf = pcb[current_running_pid].tf;
 }
 
 void syscallHandle(struct TrapFrame *tf)
@@ -76,6 +80,5 @@ void GProtectFaultHandle(struct TrapFrame *tf)
 }*/
 void timeHandle(struct TrapFrame *tf)
 {
-	
 	putChar('x');
 }

@@ -11,7 +11,8 @@ int32_t put_into_running(int32_t pid)
 {
     if (pid == current_running_pid)
         return 1;
-    
+
+    return 1;
 }
 int32_t getpid(){
     return current_running_pid;
@@ -20,12 +21,15 @@ int32_t transfer_pid_mode(int32_t src_mode,int32_t dst_mode){
     /*switch(src_mode){
         case RUNNABLE:
     }*/
+    return 1;
 }
 int32_t put_into_runnable(int32_t pid){
     pcb[pid].pre_pid = pcb[runnable_query].pre_pid;
     pcb[pid].next_pid = runnable_query;
     pcb[runnable_query].pre_pid = pid;
     pcb[pid].state = RUNNABLE;
+
+    return 1;
 }
 int32_t put_into_dead();
 
@@ -52,5 +56,6 @@ int32_t init_kernel_pcb(uint32_t ss0,uint32_t esp0){
     pcb[0].tf.ss = ss0;
     pcb[0].tf.esp = esp0;
     pcb[0].state = RUNNING;
+    pcb[0].tf.eip = (uint32_t)IDLE;
     return 1;
 }
