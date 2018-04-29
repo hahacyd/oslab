@@ -4,9 +4,18 @@
 int data = 0;
 int uEntry(void)
 {
+	//syscall(4,1,1,2,0,0);
 	int ret = fork();
-	int i = 8;
+	//if(ret);
+	printf("ret = %d\n",ret);
+	//syscall(__NR_write, 1, (int)(char*)&"ni hao a?", 12, 0, 0);
+	//printf("Child Process: Pong %d,%d;\n", data, 1);
+	//int ret = fork();
+	//if(ret);
+		//LOG("cyd");
 
+	/*int ret = fork();
+	int i = 8;
 	if(0 == ret){
 		data = 2;
 		while (i != 0)
@@ -25,6 +34,7 @@ int uEntry(void)
 			sleep(128);
 		}
 		exit();
-	}
+	}*/
+	while(1);
 	return 0;
 }

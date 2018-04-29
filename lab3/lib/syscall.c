@@ -29,6 +29,9 @@ int32_t syscall(int num, uint32_t a1, uint32_t a2,
 	asm volatile("movl %0,%%esi" ::"m"(a5)); /**/
 
 	asm volatile("int $0x80");
+
+	asm volatile("movl %%eax,%0" :"=m"(ret));
+
 	return ret;
 }
 
@@ -51,81 +54,21 @@ typedef enum {
 	null = 88
 } Types;
 int fork(){
-	return 0;
+	int32_t res = syscall(__NR_fork, 1, (uint32_t)(char *)&"ni hao a", 13, 0, 0);
+	return res;
 }
-int sleep(int time){
+int sleep(int32_t time){
+	syscall(__NR_clock_nanosleep, time, 0, 0, 0, 0);
 	return 0;
 }
 int exit(){
+	syscall(__NR_exit, 0, 0, 0, 0, 0);
 	return 0;
 }
-void printf(const char *format, ...)
-{
-	int buf_ptr = 0;
-	uint32_t *ap = (uint32_t *)(void *)&format + 1;
-	//fs_write(1,i2A(3431),10);
-	char *c = (void *)format;
-	Types state = null;
 
-	for (; *c != '\0'; c++)
-	{
-		if ('%' == *c)
-		{
-			switch (*(++c))
-			{
-			case 'd':
-				state = oct;
-				break;
-			case 'x':
-				state = dec;
-				break;
-			case 's':
-				state = str;
-				break;
-			case 'c':
-				state = word;
-				break;
-			default:
-				state = null;
-				break;
-			}
-		}
-		else
-		{
-			state = null;
-		}
-		if (null == state)
-		{
-			sys_buffer[buf_ptr++] = *c;
-		}
-		else if (oct == state)
-		{
-			//int len = 0;
-			char *t = (void *)0;
-			i2A((int)*ap++, &t);
-			buf_ptr += append(sys_buffer + buf_ptr, t);
-		}
-		else if (dec == state)
-		{
-			char *t = (void *)0;
-			i2X((int)*ap++, &t);
-			buf_ptr += append(sys_buffer + buf_ptr, t);
-		}
-		else if (str == state)
-		{
-			buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
-		} /**/
-		else if(word == state){
-			//buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
-			sys_buffer[buf_ptr++] = *ap++;
-		}
-	}
-	sys_buffer[buf_ptr++] = '\0';
-	fs_write(1, sys_buffer, buf_ptr);
-}
 void fs_write(int fd, const char *address, int length)
 {
-	syscall(4, fd, (int)address, length, 0, 0);
+	syscall(__NR_write, fd, (int)address, length, 0, 0);
 }
 void putchar_user(char ch)
 {
@@ -262,4 +205,68 @@ int length_str(char* str){
 		count++;
 	}
 	return count;
+}
+void printf(const char *format, ...)
+{
+	int buf_ptr = 0;
+	uint32_t *ap = (uint32_t *)(void *)&format + 1;
+	//fs_write(1,i2A(3431),10);
+	char *c = (void *)format;
+	Types state = null;
+
+	for (; *c != '\0'; c++)
+	{
+		if ('%' == *c)
+		{
+			switch (*(++c))
+			{
+			case 'd':
+				state = oct;
+				break;
+			case 'x':
+				state = dec;
+				break;
+			case 's':
+				state = str;
+				break;
+			case 'c':
+				state = word;
+				break;
+			default:
+				state = null;
+				break;
+			}
+		}
+		else
+		{
+			state = null;
+		}
+		if (null == state)
+		{
+			sys_buffer[buf_ptr++] = *c;
+		}
+		else if (oct == state)
+		{
+			//int len = 0;
+			char *t = (void *)0;
+			i2A((int)*ap++, &t);
+			buf_ptr += append(sys_buffer + buf_ptr, t);
+		}
+		else if (dec == state)
+		{
+			char *t = (void *)0;
+			i2X((int)*ap++, &t);
+			buf_ptr += append(sys_buffer + buf_ptr, t);
+		}
+		else if (str == state)
+		{
+			buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
+		} /**/
+		else if(word == state){
+			//buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
+			sys_buffer[buf_ptr++] = *ap++;
+		}
+	}
+	sys_buffer[buf_ptr++] = '\0';
+	fs_write(1, sys_buffer, buf_ptr);
 }

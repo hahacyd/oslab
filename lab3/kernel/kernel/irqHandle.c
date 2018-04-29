@@ -15,7 +15,7 @@ void irqHandle(struct TrapFrame *tf)
 	 */
 	/* Reassign segment register */
 	//putChar('x');
-	pcb[current_running_pid].tf = *(TrapFrame2 *)tf;
+	//pcb[current_running_pid].tf = *(TrapFrame2 *)tf;
 
 	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
 	switch (tf->irq)
@@ -35,8 +35,10 @@ void irqHandle(struct TrapFrame *tf)
 	default:
 		assert(0);
 	}
+	enableInterrupt();
+	return;
 	//this will screctly change process context by change current_running_pid;
-	*(TrapFrame2 *)tf = pcb[current_running_pid].tf;
+	//*(TrapFrame2 *)tf = pcb[current_running_pid].tf;
 }
 
 void syscallHandle(struct TrapFrame *tf)
@@ -44,21 +46,31 @@ void syscallHandle(struct TrapFrame *tf)
 	/* 实现系统调用*/
 	//asm volatile("int $0x20");
 	//asm volatile("mov %0,%%gs:" ::"a"(6 << 3));
+	LOG("irq = 0x%x\n",tf->irq);
 	switch (tf->eax)
 	{
-	case 4:
+	case __NR_write:
 		sys_write(tf);
 		break;
+	case __NR_clock_nanosleep:
+		//sys_sleep(tf);
+		break;
+	case __NR_exit:
+		//sys_exit(tf);
+		break;
+	case __NR_fork:
+		tf->eax = sys_fork(tf);
+		break;
 	default:
-	{
-		return;
-	} /**/
+			return;/**/
 	}
+	return;
 	//enterUserSpace(1);
 }
-
 void GProtectFaultHandle(struct TrapFrame *tf)
 {
+	//printk("%d \n", tf->irq);
+	LOG("%d \n",tf->irq);
 	assert(0);
 	return;
 }
@@ -80,5 +92,6 @@ void GProtectFaultHandle(struct TrapFrame *tf)
 }*/
 void timeHandle(struct TrapFrame *tf)
 {
-	putChar('x');
+	checkTimeCount(tf);
+	putChar('A');
 }

@@ -54,8 +54,8 @@ void initSeg() {
 	//start init idle pcb
 	
 	//tss.esp0 = (uint32_t)pcb[0].stack;
-	LOG("kernel stack address = %x\n", (uint32_t)pcb[0].stack);
-	LOG("pcb address = %x\n", (uint32_t)pcb);
+	//LOG("kernel stack address = %x\n", (uint32_t)pcb[0].stack);
+	//LOG("pcb address = %x\n", (uint32_t)pcb);
 
 	//tss.esp0 = 0x500000; // set kernel esp to 0x500,000
 	init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
@@ -90,15 +90,34 @@ void initSeg() {
 	lLdt(0);
 }
 #define SELECTOR(ss) (ss>>3)
-void enterUserSpace(uint32_t entry) {
+void enterUserSpace_pcb(int32_t pid){
+	ProcessTable *pcbsrc = &GET_PCB(pid);
 
-	asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss
+	asm volatile("pushl %0" ::"r"(pcbsrc->tf.ss));
+	asm volatile("pushl %0" ::"r"(pcbsrc->tf.esp));		  // %esp 128MB
+	asm volatile("pushfl");							  //push eflags
+	asm volatile("pushl %0;" ::"r"(pcbsrc->tf.cs)); //push user cs
+	asm volatile("pushl %0;" ::"r"(pcbsrc->tf.eip));			  //push eip
+	asm volatile("iret");
+}
+void enterUserSpace(uint32_t entry)
+{
+#ifdef DEBUG
+	loaded = 1;
+#endif
+	GET_PCB(1).tf.ss = USEL(SEG_UDATA);
+	GET_PCB(1).tf.esp = 128 << 20;
+	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
+	GET_PCB(1).tf.eip = entry;
+	GET_PCB(1).timeCount = 10;
+	GET_PCB(1).state = RUNNING;
+	enterUserSpace_pcb(1);
+	/*asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss
 	asm volatile("pushl %0":: "r"(128 << 20));			// %esp 128MB
 	asm volatile("pushfl");    //push eflags
 	asm volatile("pushl %0;" ::"r"(USEL(SEG_UCODE)));   //push user cs
 	asm volatile("pushl %0;" ::"r"(entry));    //push eip
-	asm volatile("iret");
-
+	asm volatile("iret");*/
 }
 
 void loadUMain(void) {
