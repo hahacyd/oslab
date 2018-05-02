@@ -13,8 +13,8 @@ int32_t sys_fork(struct TrapFrame *tf){
     GET_PCB(childpid).tf.eax = 0;
     GET_PCB(childpid).tf.esp = 126 << 20;
 #ifdef DEBUG
-    LOG("interupt eip = 0x%x",GET_PCB(childpid).tf.eip);
-    LOG("interupt cs = 0x%x",GET_PCB(childpid).tf.cs);
+    //LOG("interupt eip = 0x%x",GET_PCB(childpid).tf.eip);
+    //LOG("interupt cs = 0x%x",GET_PCB(childpid).tf.cs);
 #endif
 
     //assert(GET_PCB(childpid).tf.cs == USEL(SEG_UCODE));

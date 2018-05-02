@@ -46,7 +46,7 @@ void syscallHandle(struct TrapFrame *tf)
 	/* 实现系统调用*/
 	//asm volatile("int $0x20");
 	//asm volatile("mov %0,%%gs:" ::"a"(6 << 3));
-	LOG("irq = 0x%x\n",tf->irq);
+	//LOG("irq = 0x%x\n",tf->irq);
 	switch (tf->eax)
 	{
 	case __NR_write:
@@ -56,7 +56,7 @@ void syscallHandle(struct TrapFrame *tf)
 		//sys_sleep(tf);
 		break;
 	case __NR_exit:
-		//sys_exit(tf);
+		sys_exit(tf);
 		break;
 	case __NR_fork:
 		tf->eax = sys_fork(tf);
@@ -74,28 +74,16 @@ void GProtectFaultHandle(struct TrapFrame *tf)
 	assert(0);
 	return;
 }
-/*static char *i2A(int a) {
-	static char buf[30];
-	char *p = buf + sizeof(buf) - 1;
-	do {
-		*--p = '0' + a % 10;
-	} while (a /= 10);
-	return p;
-}*/
+
 #define SELECTOR(ss) (ss >> 3)
 
-/*void start_into_kernel(uint16_t irq)
-{
-	//uint16_t old_cs = 0,old_ss = 0;
-	//uint32_t old_eip = 0, old_esp = 0;
-	//uint16_t target_cs = IDT[irq].; 
-}*/
 void timeHandle(struct TrapFrame *tf)
 {
-	//GET_PCB(GET_CUR_PID).tf = *(TrapFrame2*)tf;
-	assert(1 == GET_CUR_PID);
+	putChar('A');
+	 //GET_PCB(GET_CUR_PID).tf = *(TrapFrame2*)tf;
+	//assert(1 == GET_CUR_PID);
 
 	//LOG("tf->eip = 0x%x", ((TrapFrame2 *)tf)->eip);
 	checkTimeCount(tf);
-	putChar('A');
+	putChar('E');
 }

@@ -5,7 +5,12 @@ SegDesc gdt[NR_SEGMENTS];
 TSS tss;
 
 #define SECTSIZE 512
+int32_t change_tss(uint32_t ss0,uint32_t esp0){
+	tss.ss0 = ss0;
+	tss.esp0 = esp0;
 
+	return 1;
+}
 void waitDisk(void) {
 	while((inByte(0x1F7) & 0xC0) != 0x40); 
 }
@@ -58,10 +63,11 @@ void initSeg() {
 	//LOG("pcb address = %x\n", (uint32_t)pcb);
 
 	//tss.esp0 = 0x500000; // set kernel esp to 0x500,000
-	init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
-	tss.esp0 = pcb[0].tf.esp;
-	
-	tss.ss0 = pcb[0].tf.ss;
+	//init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
+	change_tss(pcb[0].tf.ss, ((uint32_t)pcb[0].stack) + MAX_STACK_SIZE - 1);
+	//tss.esp0 = pcb[0].tf.esp;
+
+	//tss.ss0 = pcb[0].tf.ss;
 	
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
@@ -109,9 +115,12 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.esp = 128 << 20;
 	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
 	GET_PCB(1).tf.eip = entry;
-	GET_PCB(1).timeCount = 4;
-	GET_PCB(1).state = RUNNING;
-	enterUserSpace_pcb(1);
+	GET_PCB(1).timeCount = 10;
+
+	put_into_runnable(1);
+	enterUserSpace_pcb(0);
+	//GET_PCB(1).state = RUNNING;
+	//enterUserSpace_pcb(1);
 	/*asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss
 	asm volatile("pushl %0":: "r"(128 << 20));			// %esp 128MB
 	asm volatile("pushfl");    //push eflags

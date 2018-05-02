@@ -30,7 +30,6 @@ struct ProgramHeader {
 	unsigned int flags;
 	unsigned int align;
 };
-
 void waitDisk(void);
 
 void readSect(void *dst, int offset);

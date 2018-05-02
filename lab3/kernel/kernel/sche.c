@@ -14,12 +14,14 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
     GET_CUR_PID = pid;
 
     *tf = pcb[GET_CUR_PID].tf;
+#ifdef DEBUG
+    LOG("new pid = %d", pid);
 
+#endif
     return 1;
 }
 int32_t update_block()
 {
-
     return 1;
 }
 int32_t checkTimeCount(TrapFrame2 *tf)
@@ -27,13 +29,6 @@ int32_t checkTimeCount(TrapFrame2 *tf)
 #ifdef DEBUG
     if (0 == loaded)
         return -1;
-    assert(GET_PCB(2).tf.ss == USEL(SEG_UDATA));
-    //assert(GET_PCB(1).tf.esp = 128 << 20;
-    assert(GET_PCB(2).tf.cs == USEL(SEG_UCODE));
-    //assert(GET_PCB(1).tf.eip = entry;
-    //assert(GET_PCB(1).timeCount = 10;
-    //assert(GET_PCB(1).state == RUNNING); /**/
-    //LOG("fork eip = 0x%x", GET_PCB(2).tf.eip);
 #endif
     //current_running_pid
     LOG("pid = %d", GET_CUR_PID);
@@ -42,17 +37,13 @@ int32_t checkTimeCount(TrapFrame2 *tf)
     //assert(RUNNING == pcb[GET_CUR_PID].state);
     if (pcb[GET_CUR_PID].timeCount <= 0)
     {
-        //pcb[GET_CUR_PID].tf = *tf; //save pcb context;
+        pcb[GET_CUR_PID].tf = *tf; //save pcb context;
 
-        //runnable_query = 2;
-        //put_into_runnable(GET_CUR_PID);
-        //assert(1 == GET_CUR_PID);
-        //LOG("start change pcb from %d", GET_CUR_PID);
+        put_into_runnable(GET_CUR_PID);
 
-        //LOG("eip = %x", pcb[GET_CUR_PID].tf.eip);
-        //GET_CUR_PID = get_from_runnable();
-        //LOG("to %d", GET_CUR_PID);
-        //assert(2 == GET_CUR_PID);
+        int32_t x = get_from_runnable();
+
+        put_into_running(x, tf);
 
         //GET_CUR_PID = 2;
         //LOG("%d", runnable_query);
@@ -68,11 +59,7 @@ int32_t checkTimeCount(TrapFrame2 *tf)
     pcb[GET_CUR_PID].timeCount = pcb[GET_CUR_PID].timeCount - 1;
     return 1;
 }
-int32_t transfer_pid_state(int32_t pid_src, int32_t mode_src, int32_t mode_dst)
-{
 
-    return 1;
-}
 int32_t apply_new_pid()
 {
     int32_t res = 2; //empty_query;
@@ -116,10 +103,15 @@ int32_t get_from_runnable()
         //return res;
         //pcb[runnable_query].next_pid == pcb[runnable_query].next_pid;
     }
+#ifdef DEBUG
+    LOG("put out pid = %d,left pid = %d ", res, runnable_query);
+
+#endif
     return res;
 }
 int32_t put_into_runnable(int32_t pid)
 {
+
     //LOG("%d\n", pid);
     if (-1 == runnable_query)
     {
@@ -136,7 +128,13 @@ int32_t put_into_runnable(int32_t pid)
     }
 
     pcb[pid].state = RUNNABLE;
-
+    if(0 == pid){
+        pcb[pid].tf.eip = (uint32_t)IDLE;
+    }
+    //LOG("left pid = %d put in pid = %d,",runnable_query,)
+#ifdef DEBUG
+    LOG("left pid = %d put in pid = %d,", runnable_query, pid);
+#endif
     //pcb[pid].timeCount = initTimeCount;
     pcb[pid].timeCount = 10;
     return 1;
@@ -180,8 +178,16 @@ int32_t init_kernel_pcb()
 {
     //pcb[0].tf.eip;
     pcb[0].tf.ss = KSEL(SEG_KDATA);
-    pcb[0].tf.esp = 127 << 20;
-    pcb[0].state = RUNNABLE;
+    pcb[0].tf.cs = KSEL(SEG_KCODE);
     pcb[0].tf.eip = (uint32_t)IDLE;
+    pcb[0].tf.esp = 127 << 20;
+
+    pcb[0].state = RUNNABLE;
+    pcb[0].timeCount = 4;
+    return 1;
+}
+int32_t transfer_pid_state(int32_t pid_src, int32_t mode_src, int32_t mode_dst)
+{
+
     return 1;
 }

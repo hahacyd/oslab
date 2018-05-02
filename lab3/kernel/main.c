@@ -7,8 +7,9 @@ void kEntry(void) {
 
 	initTimer();
 	init_pcb();
-
-	initSerial();// initialize serial port
+	init_kernel_pcb();
+	
+	initSerial(); // initialize serial port
 	initIdt(); // initialize idt
 	initIntr(); // iniialize 8259a
 	initSeg(); // initialize gdt, tss

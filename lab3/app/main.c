@@ -16,7 +16,7 @@ int uEntry(void)
 	}
 	printf("ret = %d\n",ret);
 
-	//exit();
+	exit();
 	//syscall(__NR_write, 1, (int)(char*)&"ni hao a?", 12, 0, 0);
 	//printf("Child Process: Pong %d,%d;\n", data, 1);
 	//int ret = fork();
