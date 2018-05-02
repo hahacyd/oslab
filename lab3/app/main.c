@@ -4,12 +4,17 @@
 int data = 0;
 int uEntry(void)
 {
+	/*printf("cyd\n");
+	sleep(28);
+	printf("haha\n");
+	exit();*/
 	int ret = fork();
+
 	if(0 == ret){
 		printf("i am child\n");
 	}
 	else{
-		sleep(128);
+		//sleep(128);
 		printf("i am parent\n");
 	}
 	printf("ret = %d\n",ret);
