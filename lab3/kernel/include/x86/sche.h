@@ -8,6 +8,12 @@
 int32_t loaded;
 //loaded = 0;
 #endif
+/*
+struct TrapFrame {
+	uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;
+	int32_t irq;
+};
+*/
 typedef struct TrapFrame2
 {
     //uint32_t gs, fs, es, ds;
@@ -49,9 +55,9 @@ typedef struct Pcb_ptr
     uint32_t pcb_no;
 } Pcb_ptr;
 
-int32_t put_into_running(int32_t pid);
+int32_t put_into_running(int32_t pid,TrapFrame2* tf);
 int32_t put_into_runnable(int32_t pid);
-int32_t put_into_block(int32_t pid);
+int32_t put_into_block(int32_t pid,int32_t sleep_time);
 int32_t put_into_dead(int32_t pid);
 
 int32_t get_from_runnable();
@@ -59,7 +65,7 @@ int32_t transfer_pid_state(int32_t pid_src, int32_t mode_src, int32_t mode_dst);
 int32_t getpid();
 void init_pcb();
 
-int32_t init_kernel_pcb(uint32_t ss0, uint32_t esp0);
+int32_t init_kernel_pcb();
 
 int32_t apply_new_pid();
 int32_t checkTimeCount();

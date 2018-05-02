@@ -20,8 +20,8 @@ void readSect(void *dst, int offset) {
 	outByte(0x1F5, offset >> 16);
 	outByte(0x1F6, (offset >> 24) | 0xE0);
 	outByte(0x1F7, 0x20);
-
-	waitDisk();
+ //
+	waitDisk(); 
 	for (i = 0; i < SECTSIZE / 4; i ++) {
 		((int *)dst)[i] = inLong(0x1F0);
 	}
@@ -109,7 +109,7 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.esp = 128 << 20;
 	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
 	GET_PCB(1).tf.eip = entry;
-	GET_PCB(1).timeCount = 10;
+	GET_PCB(1).timeCount = 4;
 	GET_PCB(1).state = RUNNING;
 	enterUserSpace_pcb(1);
 	/*asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss

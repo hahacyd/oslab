@@ -92,6 +92,10 @@ void GProtectFaultHandle(struct TrapFrame *tf)
 }*/
 void timeHandle(struct TrapFrame *tf)
 {
+	//GET_PCB(GET_CUR_PID).tf = *(TrapFrame2*)tf;
+	assert(1 == GET_CUR_PID);
+
+	//LOG("tf->eip = 0x%x", ((TrapFrame2 *)tf)->eip);
 	checkTimeCount(tf);
 	putChar('A');
 }
