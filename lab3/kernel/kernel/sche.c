@@ -1,7 +1,7 @@
 #include "x86.h"
 #include "device.h"
 //#include"common.h"
-static uint32_t runnable_query = -1,
+static int32_t runnable_query = -1,
                 //empty_query = 1,
     //running_query = 1,
     block_query = -1; /* */
@@ -16,7 +16,6 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
     *tf = pcb[GET_CUR_PID].tf;
 #ifdef DEBUG
     LOG("new pid = %d", pid);
-
 #endif
     return 1;
 }
@@ -29,10 +28,12 @@ int32_t checkTimeCount(TrapFrame2 *tf)
 #ifdef DEBUG
     if (0 == loaded)
         return -1;
-#endif
-    //current_running_pid
     LOG("pid = %d", GET_CUR_PID);
     LOG("timecount = %d", pcb[GET_CUR_PID].timeCount);
+#endif
+    //current_running_pid
+    check_block();
+
     //LOG("%d and %d", pcb[GET_CUR_PID].state, RUNNING);
     //assert(RUNNING == pcb[GET_CUR_PID].state);
     if (pcb[GET_CUR_PID].timeCount <= 0)
@@ -56,7 +57,6 @@ int32_t checkTimeCount(TrapFrame2 *tf)
         //enterUserSpace_pcb(GET_CUR_PID);
     }
 
-    pcb[GET_CUR_PID].timeCount = pcb[GET_CUR_PID].timeCount - 1;
     return 1;
 }
 
@@ -69,6 +69,12 @@ int32_t apply_new_pid()
 int32_t getpid()
 {
     return current_running_pid;
+}
+int32_t getrunnable(){
+    return runnable_query;
+}
+int32_t getblocked(){
+    return block_query;
 }
 int32_t transfer_pid_mode(int32_t src_mode, int32_t dst_mode)
 {
@@ -128,10 +134,11 @@ int32_t put_into_runnable(int32_t pid)
     }
 
     pcb[pid].state = RUNNABLE;
-    if(0 == pid){
+    if (0 == pid)
+    {
         pcb[pid].tf.eip = (uint32_t)IDLE;
     }
-    //LOG("left pid = %d put in pid = %d,",runnable_query,)
+        //LOG("left pid = %d put in pid = %d,",runnable_query,)
 #ifdef DEBUG
     LOG("left pid = %d put in pid = %d,", runnable_query, pid);
 #endif
@@ -139,7 +146,21 @@ int32_t put_into_runnable(int32_t pid)
     pcb[pid].timeCount = 10;
     return 1;
 }
-int32_t put_into_block(int32_t pid, int32_t sleep_time)
+int32_t check_block(){
+    if(-1 == block_query)
+        return -1;
+    int32_t pivot = block_query;
+    do
+    {
+        if(pcb[pivot].sleeptime <= 0){
+            get_from_block(pivot);
+
+            put_into_runnable(pivot);
+        }
+    } while (pivot != block_query && block_query != -1);
+    return 1;
+}
+int32_t put_into_block(int32_t pid, TrapFrame2*tf)
 {
     if (-1 == block_query)
     {
@@ -154,8 +175,120 @@ int32_t put_into_block(int32_t pid, int32_t sleep_time)
         pcb[pid].next_pid = block_query;
         pcb[block_query].pre_pid = pid;
     }
-    pcb[pid].sleeptime = sleep_time;
+    pcb[pid].tf = *tf;
+    pcb[pid].sleeptime = tf->ebx;
     pcb[pid].state = BLOCKED;
+
+    return 1;
+}
+
+int32_t get_from(int32_t mode, int32_t pid)
+{
+    if (check_is_in(mode, pid) != 1)
+    {
+        assert(0);
+        //never come here;
+        return -1;
+    }
+
+    int32_t *power = NULL;
+    switch (pcb[pid].state)
+    {
+    case RUNNABLE:
+        power = &runnable_query;
+        break;
+    case BLOCKED:
+        power = &block_query;
+        break;
+    default:
+        assert(0);
+    }
+    int32_t res = mode;
+
+    assert(res == *power);
+
+    if (-1 == res)
+    {
+        return -1;
+    }
+    else if (res == pcb[res].next_pid)
+    {
+        *power = -1;
+        //int32_t res = runnable_query;
+    }
+    else
+    {
+        //int32_t res = runnable_query;
+        int32_t pre = pcb[res].pre_pid;
+        int32_t next = pcb[res].next_pid;
+
+        pcb[pre].next_pid = next;
+        pcb[next].pre_pid = pre;
+        *power = next;
+        //return res;
+        //pcb[runnable_query].next_pid == pcb[runnable_query].next_pid;
+    }
+    return res;
+
+/*
+    int32_t res = runnable_query;
+    if (-1 == runnable_query)
+    {
+        return -1;
+    }
+    else if (runnable_query == pcb[runnable_query].next_pid)
+    {
+        //int32_t res = runnable_query;
+        runnable_query = -1;
+        //return res;
+    }
+    else
+    {
+        //int32_t res = runnable_query;
+        int32_t pre = pcb[runnable_query].pre_pid;
+        int32_t next = pcb[runnable_query].next_pid;
+
+        pcb[pre].next_pid = next;
+        pcb[next].pre_pid = pre;
+        runnable_query = next;
+
+        //return res;
+        //pcb[runnable_query].next_pid == pcb[runnable_query].next_pid;
+    }
+
+*/
+}
+int32_t get_from_block(int32_t pid)
+{
+    assert(-1 != get_from(block_query, pid));
+
+    return 1;
+}
+int32_t check_is_in(int32_t mode, int32_t pid)
+{
+    int32_t ptr = mode;
+    if (mode <= 0)
+        return -1;
+    do
+    {
+        if (ptr == pid)
+            return 1;
+        ptr = pcb[ptr].next_pid;
+    } while (ptr != mode);
+
+    return -1;
+}
+int32_t block_decrease()
+{
+    int32_t pivot = block_query;
+    if (-1 == pivot)
+        return -1;
+    do
+    {
+        pcb[pivot].sleeptime -= 1;
+        pivot = pcb[pivot].next_pid;
+
+    } while (pivot != block_query);
 
     return 1;
 }

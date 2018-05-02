@@ -53,7 +53,7 @@ void syscallHandle(struct TrapFrame *tf)
 		sys_write(tf);
 		break;
 	case __NR_clock_nanosleep:
-		//sys_sleep(tf);
+		sys_sleep(tf);
 		break;
 	case __NR_exit:
 		sys_exit(tf);
@@ -84,6 +84,9 @@ void timeHandle(struct TrapFrame *tf)
 	//assert(1 == GET_CUR_PID);
 
 	//LOG("tf->eip = 0x%x", ((TrapFrame2 *)tf)->eip);
+	pcb[getpid()].timeCount -= 1;
+	
+	block_decrease();
 	checkTimeCount(tf);
 	putChar('E');
 }

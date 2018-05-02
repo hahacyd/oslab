@@ -57,7 +57,7 @@ typedef struct Pcb_ptr
 
 int32_t put_into_running(int32_t pid,TrapFrame2* tf);
 int32_t put_into_runnable(int32_t pid);
-int32_t put_into_block(int32_t pid,int32_t sleep_time);
+int32_t put_into_block(int32_t pid,TrapFrame2 *tf);
 int32_t put_into_dead(int32_t pid);
 
 int32_t get_from_runnable();
@@ -69,5 +69,13 @@ int32_t init_kernel_pcb();
 
 int32_t apply_new_pid();
 int32_t checkTimeCount();
+
+int32_t block_decrease();
+int32_t check_is_in(int32_t mode, int32_t pid);
+int32_t get_from_block(int32_t pid);
+int32_t get_from(int32_t mode, int32_t pid);
+int32_t check_block();
+int32_t getrunnable();
+int32_t getblocked();
 void enterUserSpace_pcb(int32_t pid);
 #endif
