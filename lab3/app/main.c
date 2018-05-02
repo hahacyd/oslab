@@ -4,17 +4,15 @@
 int data = 0;
 int uEntry(void)
 {
-	printf("cyd\n");
-	sleep(128);
-	printf("haha\n");
-	/*int ret = fork();
+	int ret = fork();
 	if(0 == ret){
 		printf("i am child\n");
 	}
 	else{
+		sleep(128);
 		printf("i am parent\n");
 	}
-	printf("ret = %d\n",ret);*/
+	printf("ret = %d\n",ret);
 
 	exit();
 	//syscall(__NR_write, 1, (int)(char*)&"ni hao a?", 12, 0, 0);
