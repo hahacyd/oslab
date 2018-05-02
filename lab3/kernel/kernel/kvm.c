@@ -31,7 +31,11 @@ void readSect(void *dst, int offset) {
 		((int *)dst)[i] = inLong(0x1F0);
 	}
 }
-
+int32_t change_gdt(int index,SegDesc seg){
+	
+	gdt[index] = seg;
+	return 1;
+}
 void initSeg() {
 	/*
 
@@ -101,9 +105,10 @@ void enterUserSpace_pcb(int32_t pid){
 
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.ss));
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.esp));		  // %esp 128MB
-	asm volatile("pushfl");							  //push eflags
 	asm volatile("pushl %0;" ::"r"(pcbsrc->tf.cs)); //push user cs
-	asm volatile("pushl %0;" ::"r"(pcbsrc->tf.eip));			  //push eip
+	asm volatile("pushl %0;" ::"r"(pcbsrc->tf.eip));
+		asm volatile("pushfl");							  //push eflags
+			  //push eip
 	asm volatile("iret");
 }
 void enterUserSpace(uint32_t entry)

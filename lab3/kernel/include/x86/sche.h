@@ -16,7 +16,7 @@ struct TrapFrame {
 */
 typedef struct TrapFrame2
 {
-    //uint32_t gs, fs, es, ds;
+    uint32_t gs, fs, es, ds;
     uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;
     int32_t irq;    //interrupt no
     uint32_t error; //error code

@@ -6,19 +6,7 @@ static int32_t runnable_query = -1,
     //running_query = 1,
     block_query = -1; /* */
 
-int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
-{
-    if (pid == current_running_pid)
-        return 1;
 
-    GET_CUR_PID = pid;
-
-    *tf = pcb[GET_CUR_PID].tf;
-#ifdef DEBUG
-    LOG("new pid = %d", pid);
-#endif
-    return 1;
-}
 int32_t update_block()
 {
     return 1;
@@ -28,8 +16,7 @@ int32_t checkTimeCount(TrapFrame2 *tf)
 #ifdef DEBUG
     if (0 == loaded)
         return -1;
-    LOG("pid = %d", GET_CUR_PID);
-    LOG("timecount = %d", pcb[GET_CUR_PID].timeCount);
+    LOG("pid = %d timecount = %d\nesp = 0x%x eip = 0x%x", GET_CUR_PID,pcb[GET_CUR_PID].timeCount,tf->esp,tf->eip);
 #endif
     //current_running_pid
     check_block();
@@ -115,10 +102,33 @@ int32_t get_from_runnable()
 #endif
     return res;
 }
+int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
+{
+    if (pid == current_running_pid)
+        return 1;
+
+    GET_CUR_PID = pid;
+    
+    if(2 == pid){
+        //change_gdt(SEG_UDATA, SEG(STA_X | STA_R, 0, 0xffffffff, DPL_USER));
+    }
+    *tf = pcb[GET_CUR_PID].tf;
+#ifdef DEBUG
+    /*if(1 == pid)
+        tf->esp = 10 << 20;
+    else if(2 == pid)
+        tf->esp = 20 << 20;
+    */
+    LOG("new pid = %d esp = 0x%x eip = 0x%x", pid, tf->esp, tf->eip);
+    //assert(0);
+#endif
+    return 1;
+}
 int32_t put_into_runnable(int32_t pid)
 {
 
     //LOG("%d\n", pid);
+    
     if (-1 == runnable_query)
     {
         runnable_query = pid;
@@ -313,7 +323,7 @@ int32_t init_kernel_pcb()
     pcb[0].tf.ss = KSEL(SEG_KDATA);
     pcb[0].tf.cs = KSEL(SEG_KCODE);
     pcb[0].tf.eip = (uint32_t)IDLE;
-    pcb[0].tf.esp = 127 << 20;
+    //pcb[0].tf.esp = 127 << 20;
 
     pcb[0].state = RUNNABLE;
     pcb[0].timeCount = 4;

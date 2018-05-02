@@ -9,7 +9,7 @@ int uEntry(void)
 		printf("i am child\n");
 	}
 	else{
-		sleep(128);
+		sleep(12);
 		printf("i am parent\n");
 	}
 	printf("ret = %d\n",ret);
