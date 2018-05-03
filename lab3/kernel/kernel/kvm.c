@@ -126,6 +126,7 @@ void enterUserSpace(uint32_t entry)
 
 	
 	put_into_runnable(1,NULL);
+	asm volatile("movl %0,%%esp" ::"i"(12 << 10));
 	enterUserSpace_pcb(0);
 	//GET_PCB(1).state = RUNNING;
 	//enterUserSpace_pcb(1);
