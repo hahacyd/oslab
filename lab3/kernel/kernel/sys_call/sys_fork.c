@@ -16,14 +16,13 @@ int32_t sys_fork(struct TrapFrame *tf){
     //LOG("interupt eip = 0x%x",GET_PCB(childpid).tf.eip);
     //LOG("interupt cs = 0x%x",GET_PCB(childpid).tf.cs);
 #endif
-
     //assert(GET_PCB(childpid).tf.cs == USEL(SEG_UCODE));
     //assert(GET_PCB(childpid).tf.ss == USEL(SEG_UDATA));
 
     //assert(1 == GET_CUR_PID);
     assert(2 == childpid);
 
-    put_into_runnable(childpid);
+    put_into_runnable(childpid,&GET_PCB(childpid).tf);
 
     return childpid;
 }

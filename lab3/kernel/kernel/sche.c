@@ -16,18 +16,18 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
     *tf = pcb[GET_CUR_PID].tf;
     //assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
     //assert(0);
-    LOG("tss esp0 = %x", get_tss().esp0);
-    if (0 == pid)
-    {
+    //LOG("tss esp0 = %x", get_tss().esp0);
 
+    if (0 == pid)  //现在切换tss.esp0的值，在下次来内核态时用这个值，
+    {
+        
         change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
         assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
+        //LOG("stack - tf = 0x%x",(uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1) - (uint32_t)tf);
     }
     else{
-
         change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
-        //asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
-
+        assert(get_tss().esp0 == (uint32_t)(pcb[pid].stack + MAX_STACK_SIZE - 1));
     }
 #ifdef DEBUG
     LOG("new pid = %d", pid);
@@ -55,7 +55,7 @@ int32_t checkTimeCount(TrapFrame2 *tf)
     {
         pcb[GET_CUR_PID].tf = *tf; //save pcb context;
 
-        put_into_runnable(GET_CUR_PID);
+        put_into_runnable(GET_CUR_PID,tf);
 
         int32_t x = get_from_runnable();
 
@@ -130,7 +130,7 @@ int32_t get_from_runnable()
 #endif
     return res;
 }
-int32_t put_into_runnable(int32_t pid)
+int32_t put_into_runnable(int32_t pid,TrapFrame2* tf)
 {
 
     //LOG("%d\n", pid);
@@ -158,6 +158,7 @@ int32_t put_into_runnable(int32_t pid)
     LOG("left pid = %d put in pid = %d,", runnable_query, pid);
 #endif
     //pcb[pid].timeCount = initTimeCount;
+    pcb[pid].core_esp = (uint32_t)tf;
     pcb[pid].timeCount = 10;
     return 1;
 }
@@ -170,7 +171,7 @@ int32_t check_block(){
         if(pcb[pivot].sleeptime <= 0){
             get_from_block(pivot);
 
-            put_into_runnable(pivot);
+            put_into_runnable(pivot,&pcb[pivot].tf);
         }
     } while (pivot != block_query && block_query != -1);
     return 1;

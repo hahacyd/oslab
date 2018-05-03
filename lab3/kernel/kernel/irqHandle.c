@@ -46,6 +46,8 @@ void irqHandle(struct TrapFrame *tf)
 	default:
 		assert(0);
 	}
+	//printk("core_esp = %x", pcb[getpid()].core_esp);
+	//*esp = pcb[getpid()].core_esp;
 	enableInterrupt();
 	return;
 	//this will screctly change process context by change current_running_pid;

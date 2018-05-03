@@ -57,7 +57,7 @@ typedef struct Pcb_ptr
 } Pcb_ptr;
 
 int32_t put_into_running(int32_t pid,TrapFrame2* tf);
-int32_t put_into_runnable(int32_t pid);
+int32_t put_into_runnable(int32_t pid,TrapFrame2* tf);
 int32_t put_into_block(int32_t pid,TrapFrame2 *tf);
 int32_t put_into_dead(int32_t pid);
 

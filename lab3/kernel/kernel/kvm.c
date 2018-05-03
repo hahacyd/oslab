@@ -70,6 +70,8 @@ void initSeg() {
 	//tss.esp0 = 0x500000; // set kernel esp to 0x500,000
 	//init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
 	change_tss(pcb[0].tf.ss, (uint32_t)((pcb[0].stack) + MAX_STACK_SIZE - 1));
+	//change_tss(pcb[0].tf.ss,(uint32_t)(&pcb[0].tf) + sizeof(TrapFrame2) );
+
 	//tss.esp0 = pcb[0].tf.esp;
 
 	//tss.ss0 = pcb[0].tf.ss;
@@ -122,7 +124,7 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;
 
-	put_into_runnable(1);
+	put_into_runnable(1,NULL);
 	enterUserSpace_pcb(0);
 	//GET_PCB(1).state = RUNNING;
 	//enterUserSpace_pcb(1);
