@@ -324,3 +324,13 @@ int32_t transfer_pid_state(int32_t pid_src, int32_t mode_src, int32_t mode_dst)
 
     return 1;
 }
+int32_t make_pcb(int32_t pid,TrapFrame2 *tf,uint32_t state,uint32_t timeCount,uint32_t sleeptime)
+{
+    pcb[pid].tf = *tf;
+    pcb[pid].state = state;
+    pcb[pid].timeCount = timeCount;
+    pcb[pid].sleeptime = sleeptime;
+
+    pcb[pid].core_esp = (uint32_t)tf;
+    return 1;
+}
