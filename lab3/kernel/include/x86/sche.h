@@ -45,6 +45,7 @@ typedef struct ProcessTable
 //
     uint32_t pid;
     uint32_t pre_pid,next_pid;
+    uint32_t core_esp;
 } ProcessTable;
 //static uint32_t current_num_pid = 0;
 ProcessTable pcb[MAX_PCB_NUM];
@@ -77,6 +78,6 @@ int32_t get_from(int32_t mode, int32_t pid);
 int32_t check_block();
 int32_t getrunnable();
 int32_t getblocked();
-int32_t make_pcb(int32_t pid,TrapFrame2 *tf,uint32_t state,uint32_t timeCount,uint32_t sleeptime)；
+int32_t make_pcb(int32_t pid, TrapFrame2 *tf, uint32_t state, uint32_t timeCount, uint32_t sleeptime);
 void enterUserSpace_pcb(int32_t pid);
 #endif
