@@ -16,7 +16,8 @@ void irqHandle(struct TrapFrame *tf)
 	/* Reassign segment register */
 	//putChar('x');
 	//pcb[current_running_pid].tf = *(TrapFrame2 *)tf;
-
+//LOG("tf = %x", (uint32_t)tf);
+	//assert(0);
 	//tf = (void*)1;
 	uint32_t ebp = 0;
 	asm volatile("movl %%ebp,%0"

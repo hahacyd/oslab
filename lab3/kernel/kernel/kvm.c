@@ -124,6 +124,7 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;
 
+	
 	put_into_runnable(1,NULL);
 	enterUserSpace_pcb(0);
 	//GET_PCB(1).state = RUNNING;
