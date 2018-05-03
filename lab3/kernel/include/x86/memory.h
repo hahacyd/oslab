@@ -28,7 +28,8 @@
 #define USEL(desc) (((desc) << 3) | DPL_USER)
 int32_t change_tss(uint32_t ss0, uint32_t esp0);
 
-struct GateDescriptor {
+struct GateDescriptor
+{
 	uint32_t offset_15_0      : 16;
 	uint32_t segment          : 16;
 	uint32_t pad0             : 8;
@@ -95,7 +96,7 @@ struct TSS {
         };
 };
 typedef struct TSS TSS;
-
+TSS get_tss();
 static inline void setGdt(SegDesc *gdt, uint32_t size) {
 	volatile static uint16_t data[3];
 	data[0] = size - 1;

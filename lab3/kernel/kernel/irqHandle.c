@@ -17,6 +17,17 @@ void irqHandle(struct TrapFrame *tf)
 	//putChar('x');
 	//pcb[current_running_pid].tf = *(TrapFrame2 *)tf;
 
+	//tf = (void*)1;
+	uint32_t ebp = 0;
+	asm volatile("movl %%ebp,%0"
+				 : "=m"(ebp));
+		
+	uint32_t *esp = (void *)ebp + 8;
+	//现在只要修改*esp的值就可以改变 esp寄存器指向的内核地址了，
+	assert(*esp == (uint32_t)tf);
+
+	//asm volatile("movl %0,%%ebp" ::"m"(esp));
+	//asm volatile("movl %0,%%")
 	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
 	switch (tf->irq)
 	{

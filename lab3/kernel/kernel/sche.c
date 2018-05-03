@@ -14,6 +14,21 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
     GET_CUR_PID = pid;
 
     *tf = pcb[GET_CUR_PID].tf;
+    //assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
+    //assert(0);
+    LOG("tss esp0 = %x", get_tss().esp0);
+    if (0 == pid)
+    {
+
+        change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
+        assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
+    }
+    else{
+
+        change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
+        //asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
+
+    }
 #ifdef DEBUG
     LOG("new pid = %d", pid);
 #endif

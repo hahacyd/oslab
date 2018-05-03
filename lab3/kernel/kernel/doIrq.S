@@ -29,7 +29,8 @@ asmDoIrq:
 	pushal // push process state into kernel stack
 	pushl %esp
 	call irqHandle
-	addl $4, %esp
+	popl %esp
+#	addl $4, %esp
 	popal
 	addl $4, %esp //interrupt vector is on top of kernel stack
 	addl $4, %esp //error code is on top of kernel stack

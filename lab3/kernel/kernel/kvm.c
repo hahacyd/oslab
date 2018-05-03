@@ -8,8 +8,13 @@ TSS tss;
 int32_t change_tss(uint32_t ss0,uint32_t esp0){
 	tss.ss0 = ss0;
 	tss.esp0 = esp0;
+	//asm volatile("ltr %%ax" ::"a"(KSEL(SEG_TSS)));
+	//assert(0);
 
 	return 1;
+}
+TSS get_tss(){
+	return tss;
 }
 void waitDisk(void) {
 	while((inByte(0x1F7) & 0xC0) != 0x40); 
@@ -64,7 +69,7 @@ void initSeg() {
 
 	//tss.esp0 = 0x500000; // set kernel esp to 0x500,000
 	//init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
-	change_tss(pcb[0].tf.ss, ((uint32_t)pcb[0].stack) + MAX_STACK_SIZE - 1);
+	change_tss(pcb[0].tf.ss, (uint32_t)((pcb[0].stack) + MAX_STACK_SIZE - 1));
 	//tss.esp0 = pcb[0].tf.esp;
 
 	//tss.ss0 = pcb[0].tf.ss;
