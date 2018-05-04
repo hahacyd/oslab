@@ -129,6 +129,17 @@ void initSeg() {
 #define SELECTOR(ss) (ss>>3)
 void enterUserSpace_pcb(int32_t pid){
 	ProcessTable *pcbsrc = &GET_PCB(pid);
+	asm volatile("mov %0,%%eax;" ::"r"((uint32_t)USEL(SEG_UDATA)));
+	asm volatile("movw %ax,%ds;");
+
+	//cs needn`t set
+	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KCODE)));
+	asm volatile("movw %ax,%fs;");
+
+	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KDATA)));
+	asm volatile("movw %ax,%es;");
+
+
 
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.ss));
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.esp));		  // %esp 128MB

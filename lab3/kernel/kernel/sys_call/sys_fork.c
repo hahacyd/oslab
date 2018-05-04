@@ -15,7 +15,7 @@ int32_t sys_fork(TrapFrame2 *tf){
     uint32_t src = APP_STACK_START + getpid() * 1000;
     uint32_t dst = APP_STACK_START + childpid * 1000;
     for (int i = 0; i < 1000;i++){
-        *(uint8_t *)(dst + i) = *(uint8_t *)(src + i);
+        *(uint8_t *)(dst - i) = *(uint8_t *)(src - i);
     }
 
     GET_PCB(childpid).tf = *(TrapFrame2 *)tf; //GET_PCB(1).tf;

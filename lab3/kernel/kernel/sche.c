@@ -316,9 +316,10 @@ int32_t init_kernel_pcb()
     pcb[0].tf.ss = KSEL(SEG_KDATA);
     pcb[0].tf.cs = KSEL(SEG_KCODE);
     pcb[0].tf.ds = KSEL(SEG_KDATA);
+    pcb[0].tf.es = KSEL(SEG_KDATA);
 
     pcb[0].tf.eip = (uint32_t)IDLE;
-    pcb[0].tf.esp = 127 << 20;
+    pcb[0].tf.esp = APP_STACK_START;
 
     pcb[0].state = RUNNABLE;
     pcb[0].timeCount = 4;
