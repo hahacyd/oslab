@@ -31,6 +31,9 @@ void irqHandle(struct TrapFrame2 *tf)
 	assert(*esp == (uint32_t)tf);
 	int32_t x = getpid();
 
+		if(0 != getpid()){
+			//change_gdt(USEL(SEG_UDATA), 0);
+		}
 	//asm volatile("movl %0,%%ebp" ::"m"(esp));
 	//asm volatile("movl %0,%%")
 	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
@@ -66,9 +69,9 @@ void irqHandle(struct TrapFrame2 *tf)
 			asm volatile("int $0x3");
 			//assert(0);
 		}*/
-		//if(0 != getpid()){
-		//	change_gdt(USEL(SEG_UDATA), getpid() * 1000);
-		//}
+		if(0 != getpid()){
+			//change_gdt(USEL(SEG_UDATA), getpid() * 0x1000);
+		}
 	}
 	//printk("tf = 0x%x stack = 0x%x", (uint32_t)tf, (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
 	//LOG("sizeof= 0x%x", sizeof(TrapFrame2));
