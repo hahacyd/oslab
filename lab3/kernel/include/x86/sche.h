@@ -14,13 +14,14 @@ struct TrapFrame {
 	int32_t irq;
 };
 */
+#define APP_STACK_START (4 << 20)
 typedef struct TrapFrame2
 {
-    //uint32_t gs, fs, es, ds;
+    uint32_t gs, fs, es, ds;
     uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;
     int32_t irq;    //interrupt no
-    uint32_t error; //error code
-    uint32_t eip, cs, eflags, esp, ss;
+	uint32_t error_code, eip, cs, eflags;
+    uint32_t esp, ss; // exists only when CPL changes
 } TrapFrame2;
 //below defines is for Process state
 #define RUNNABLE 1

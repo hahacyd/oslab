@@ -20,7 +20,8 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
 
     if (0 == pid)  //现在切换tss.esp0的值，在下次来内核态时用这个值，
     {
-        
+        change_gdt(KSEL(SEG_KDATA), getpid() * 1000);
+
         change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
         assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
         //LOG("stack = 0x%x tf = 0x%x stack - tf = 0x%x",(uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1),(uint32_t)tf,(uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1) - (uint32_t)tf);
@@ -28,8 +29,13 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
         //assert(0);
     }
     else{
-        //change_gdt(pcb[getpid()].tf.ss, getpid() * 1000);
-        change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
+        //change_gdt(USEL(SEG_UCODE), getpid() * 1000);
+        if(getpid() == 2){
+            LOG("parent esp = 0x%x ss = 0x%x", pcb[1].tf.esp,pcb[1].tf.ss);
+            //assert(0);
+        }
+        //change_gdt(USEL(SEG_UDATA), getpid() * 1000);
+        change_tss(KSEL(SEG_KDATA), (uint32_t)&(pcb[getpid()].stack[MAX_STACK_SIZE - 1]));
         assert(get_tss().esp0 == (uint32_t)(pcb[pid].stack + MAX_STACK_SIZE - 1));
     }
 #ifdef DEBUG

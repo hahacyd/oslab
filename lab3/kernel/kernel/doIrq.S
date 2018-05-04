@@ -27,9 +27,21 @@ irqTime:
 asmDoIrq:
 #	call disableInterrupt
 	pushal // push process state into kernel stack
+	pushl %ds
+	pushl %es
+	pushl %fs
+	pushl %gs
+
 	pushl %esp
+
 	call irqHandle
+
 	popl %esp
+
+	popl %gs
+	popl %fs
+	popl %es
+	popl %ds
 #	addl $4, %esp
 	popal
 	addl $4, %esp //interrupt vector is on top of kernel stack

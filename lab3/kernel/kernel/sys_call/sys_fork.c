@@ -1,17 +1,27 @@
 #include "x86.h"
 #include "device.h"
 
-int32_t sys_fork(struct TrapFrame *tf){
+int32_t sys_fork(TrapFrame2 *tf){
     printk("this is fork function,haha\n");
     //int32_t childpid = apply_new_pid();
 
     int32_t childpid = 2;
-    //GET_PCB(childpid).tf = GET_PCB(GET_CUR_PID).tf;
-    //int32_t childpid =  
+
+    //copy kernel stack
+    for (int i = 0; i < MAX_STACK_SIZE;i++){
+        pcb[childpid].stack[i] = pcb[getpid()].stack[i];
+    }
+    //copy user stack
+    uint32_t src = APP_STACK_START + getpid() * 1000;
+    uint32_t dst = APP_STACK_START + childpid * 1000;
+    for (int i = 0; i < 1000;i++){
+        *(uint8_t *)(dst + i) = *(uint8_t *)(src + i);
+    }
+
     GET_PCB(childpid).tf = *(TrapFrame2 *)tf; //GET_PCB(1).tf;
 
     GET_PCB(childpid).tf.eax = 0;
-    GET_PCB(childpid).tf.esp = 126 << 20;
+    GET_PCB(childpid).tf.esp = 6 << 20;
 #ifdef DEBUG
     //LOG("interupt eip = 0x%x",GET_PCB(childpid).tf.eip);
     //LOG("interupt cs = 0x%x",GET_PCB(childpid).tf.cs);

@@ -24,6 +24,8 @@ int32_t change_gdt(uint32_t sreg, uint32_t base){
 		LOG("index = %d", index);
 		assert(0);
 	}
+	setGdt(gdt, sizeof(gdt));
+
 	return 1;
 }
 int32_t change_tss(uint32_t ss0, uint32_t esp0)
@@ -77,7 +79,7 @@ void initSeg() {
 	gdt[SEG_UDATA] = SEG(STA_W,         0,       0xffffffff, DPL_USER);
 	gdt[SEG_TSS] = SEG16(STS_T32A,      &tss, sizeof(TSS)-1, DPL_KERN);
 	gdt[SEG_TSS].s = 0;
-	gdt[SEG_VEDIO] = SEG(STA_W, 0x0b8000, 0xffffffff, DPL_KERN);
+	gdt[SEG_VIDEO] = SEG(STA_W, 0x0b8000, 0xffffffff, DPL_KERN);
 	setGdt(gdt, sizeof(gdt));
 
 	/*
@@ -119,7 +121,7 @@ void initSeg() {
 	asm volatile("movw %ax,%es;");
 	asm volatile("movw %ax,%ss;");
 
-	asm volatile("mov %0,%%eax;" ::"r"(KSEL(SEG_VEDIO)));
+	asm volatile("mov %0,%%eax;" ::"r"(KSEL(SEG_VIDEO)));
 	asm volatile("movw %ax,%gs;");
 	/**/
 	lLdt(0);
@@ -141,7 +143,7 @@ void enterUserSpace(uint32_t entry)
 	loaded = 1;
 #endif
 	GET_PCB(1).tf.ss = USEL(SEG_UDATA);
-	GET_PCB(1).tf.esp = 128 << 10;
+	GET_PCB(1).tf.esp = 5 << 20;
 	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;

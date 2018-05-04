@@ -1,7 +1,7 @@
 #include "x86.h"
 #include "device.h"
 
-int32_t sys_sleep(struct TrapFrame *tf){
+int32_t sys_sleep(TrapFrame2 *tf){
     //pcb[getpid()].sleeptime = tf->ebx;
     put_into_block(getpid(), (TrapFrame2*)tf);
 

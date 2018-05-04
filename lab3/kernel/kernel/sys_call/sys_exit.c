@@ -1,7 +1,7 @@
 #include "x86.h"
 #include "device.h"
 
-int32_t sys_exit(struct TrapFrame* tf){
+int32_t sys_exit(TrapFrame2* tf){
 
 #ifdef DEBUG
     printk("come to exit\n");

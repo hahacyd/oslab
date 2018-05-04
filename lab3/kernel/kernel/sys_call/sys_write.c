@@ -33,7 +33,7 @@ int display(char x)
 }
 int fs_write(int fd, char *buf, int len)
 {
-    asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VEDIO))
+    asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO))
                  : "eax");
     asm volatile("movw %ax, %gs");
     assert(fd == 1);
@@ -50,7 +50,7 @@ int fs_write(int fd, char *buf, int len)
     //}
     return len;
 }
-void sys_write(struct TrapFrame *tf)
+void sys_write(TrapFrame2 *tf)
 {
     tf->eax = fs_write(tf->ebx, (void *)tf->ecx, tf->edx);
 }

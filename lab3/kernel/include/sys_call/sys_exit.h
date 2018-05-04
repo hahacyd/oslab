@@ -4,7 +4,7 @@
 //#include"types.h"
 
 
-int32_t sys_exit(struct TrapFrame *tf);
+
 
 #endif
 

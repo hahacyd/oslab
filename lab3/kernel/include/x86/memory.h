@@ -22,7 +22,7 @@
 #define SEG_UDATA   4           // User data/stack
 #define SEG_TSS     5           // Global unique task state segement
 
-#define SEG_VEDIO   6           // Vedio memory
+#define SEG_VIDEO   6           // Vedio memory
 // Selectors
 #define KSEL(desc) (((desc) << 3) | DPL_KERN)
 #define USEL(desc) (((desc) << 3) | DPL_USER)

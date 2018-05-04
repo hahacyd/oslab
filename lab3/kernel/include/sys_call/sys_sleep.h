@@ -3,7 +3,7 @@
 
 //#include"types.h"
 
-int32_t sys_sleep(struct TrapFrame * tf);
+
 
 
 

@@ -8,18 +8,18 @@ int uEntry(void)
 	sleep(58);
 	printf("haha\n");
 	exit();*/
-	/*int ret = fork();
-
+	int ret = fork();
 	if(0 == ret){
 		printf("i am child\n");
 	}
 	else{
-		sleep(7);
+		//sleep(7);
 		printf("i am parent\n");
 	}
 	printf("ret = %d\n",ret);
-
-	exit();*/
+	exit();
+	/*
+	*/
 	//syscall(__NR_write, 1, (int)(char*)&"ni hao a?", 12, 0, 0);
 	//printf("Child Process: Pong %d,%d;\n", data, 1);
 	//int ret = fork();
@@ -47,6 +47,8 @@ int uEntry(void)
 		}
 		exit();
 	}*/
-	while(1);
-	return 0;
+	while(1){
+		printf("i am curious!\n");
+	}
+		return 0;
 }
