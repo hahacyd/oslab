@@ -5,7 +5,29 @@ SegDesc gdt[NR_SEGMENTS];
 TSS tss;
 
 #define SECTSIZE 512
-int32_t change_tss(uint32_t ss0,uint32_t esp0){
+int32_t change_gdt(uint32_t sreg, uint32_t base){
+	uint32_t index = sreg >> 3;
+	switch(index){
+	case SEG_KCODE:
+		gdt[SEG_KCODE] = SEG(STA_X | STA_R, base,       0xffffffff, DPL_KERN);
+		break;
+	case SEG_KDATA:
+		gdt[SEG_KDATA] = SEG(STA_W, base, 0xffffffff, DPL_KERN);
+		break;
+	case SEG_UCODE:
+		gdt[SEG_UCODE] = SEG(STA_X | STA_R, base, 0xffffffff, DPL_USER);
+		break;
+	case SEG_UDATA:
+		gdt[SEG_UDATA] = SEG(STA_W, base, 0xffffffff, DPL_USER);
+		break;
+	default:
+		LOG("index = %d", index);
+		assert(0);
+	}
+	return 1;
+}
+int32_t change_tss(uint32_t ss0, uint32_t esp0)
+{
 	tss.ss0 = ss0;
 	tss.esp0 = esp0;
 	//asm volatile("ltr %%ax" ::"a"(KSEL(SEG_TSS)));
@@ -119,7 +141,7 @@ void enterUserSpace(uint32_t entry)
 	loaded = 1;
 #endif
 	GET_PCB(1).tf.ss = USEL(SEG_UDATA);
-	GET_PCB(1).tf.esp = 128 << 20;
+	GET_PCB(1).tf.esp = 128 << 10;
 	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;
@@ -142,7 +164,7 @@ void loadUMain(void) {
 
 	/*加载用户程序至内存*/
 	//void(*user)(void);
-	unsigned char* buffer = (unsigned char*)0x3000000;
+	unsigned char* buffer = (unsigned char*)0x30000;
 	for(int i = 1;i <= 200;i++){
 		readSect((void*)buffer + 512 * (i - 1),i + 200);
 	}

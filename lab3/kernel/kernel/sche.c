@@ -28,6 +28,7 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
         //assert(0);
     }
     else{
+        //change_gdt(pcb[getpid()].tf.ss, getpid() * 1000);
         change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
         assert(get_tss().esp0 == (uint32_t)(pcb[pid].stack + MAX_STACK_SIZE - 1));
     }
@@ -62,25 +63,12 @@ int32_t checkTimeCount(TrapFrame2 *tf)
         int32_t x = get_from_runnable();
 
         put_into_running(x, tf);
-
-        //GET_CUR_PID = 2;
-        //LOG("%d", runnable_query);
-        //assert(2 == runnable_query);
-
-        //runnable_query = pcb[runnable_query].next_pid;
-
-        //*tf = pcb[2].tf;
-        //pcb[GET_CUR_PID].tf.eip = (int32_t)(0x200088);
-        //enterUserSpace_pcb(GET_CUR_PID);
     }
-
     return 1;
 }
-
 int32_t apply_new_pid()
 {
     int32_t res = 2; //empty_query;
-
     return res;
 }
 int32_t getpid()
@@ -123,8 +111,6 @@ int32_t get_from_runnable()
         pcb[next].pre_pid = pre;
         runnable_query = next;
 
-        //return res;
-        //pcb[runnable_query].next_pid == pcb[runnable_query].next_pid;
     }
 #ifdef DEBUG
     LOG("put out pid = %d,left pid = %d ", res, runnable_query);
@@ -134,7 +120,6 @@ int32_t get_from_runnable()
 }
 int32_t put_into_runnable(int32_t pid,TrapFrame2* tf)
 {
-
     //LOG("%d\n", pid);
     if (-1 == runnable_query)
     {
@@ -155,13 +140,12 @@ int32_t put_into_runnable(int32_t pid,TrapFrame2* tf)
     {
         pcb[pid].tf.eip = (uint32_t)IDLE;
     }
-        //LOG("left pid = %d put in pid = %d,",runnable_query,)
 #ifdef DEBUG
     LOG("left pid = %d put in pid = %d,", runnable_query, pid);
 #endif
-    //pcb[pid].timeCount = initTimeCount;
+    pcb[pid].timeCount = initTimeCount;
     pcb[pid].core_esp = (uint32_t)tf;
-    pcb[pid].timeCount = 10;
+    //pcb[pid].timeCount = 10;
     return 1;
 }
 int32_t check_block(){
@@ -314,6 +298,7 @@ int32_t put_into_dead();
 
 void init_pcb()
 {
+    initTimeCount = 5;
     for (int i = 0; i < MAX_PCB_NUM; i++)
     {
         pcb[i].pid = i;

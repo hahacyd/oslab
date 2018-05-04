@@ -27,7 +27,7 @@
 #define KSEL(desc) (((desc) << 3) | DPL_KERN)
 #define USEL(desc) (((desc) << 3) | DPL_USER)
 int32_t change_tss(uint32_t ss0, uint32_t esp0);
-
+int32_t change_gdt(uint32_t sreg, uint32_t base);
 struct GateDescriptor
 {
 	uint32_t offset_15_0      : 16;

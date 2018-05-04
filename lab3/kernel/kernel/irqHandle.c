@@ -48,6 +48,7 @@ void irqHandle(struct TrapFrame *tf)
 
 		break;
 	default:
+		LOG("irq = %d", tf->irq);
 		assert(0);
 	}
 	if ((0x80 == tf->irq || 0x20 == tf->irq) && getpid() != x) //说明切进程了

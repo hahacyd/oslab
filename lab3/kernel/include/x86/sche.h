@@ -34,7 +34,7 @@ typedef struct TrapFrame2
 #define GET_PCB(no) pcb[no]
 #define GET_CUR_PID current_running_pid
 int32_t current_running_pid;
-//const int32_t initTimeCount = 10;
+int32_t initTimeCount;
 typedef struct ProcessTable
 {
     uint32_t stack[MAX_STACK_SIZE]; //kernel core stack;
@@ -80,4 +80,9 @@ int32_t getrunnable();
 int32_t getblocked();
 int32_t make_pcb(int32_t pid, TrapFrame2 *tf, uint32_t state, uint32_t timeCount, uint32_t sleeptime);
 void enterUserSpace_pcb(int32_t pid);
+
+
+
+
+
 #endif
