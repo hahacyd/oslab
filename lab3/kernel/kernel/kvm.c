@@ -160,13 +160,12 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.fs = USEL(SEG_UDATA);
 
 
-	GET_PCB(1).tf.esp = APP_STACK_START;
+	GET_PCB(1).tf.esp = APP_STACK_START + 0x1000;
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;
 
 	
 	put_into_runnable(1,NULL);
-	asm volatile("movl %0,%%esp" ::"i"(12 << 10));
 	enterUserSpace_pcb(0);
 	//GET_PCB(1).state = RUNNING;
 	//enterUserSpace_pcb(1);
