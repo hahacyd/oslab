@@ -1477,7 +1477,7 @@ Disassembly of section .text:
   101065:	8b 45 08             	mov    0x8(%ebp),%eax
   101068:	ff 70 20             	pushl  0x20(%eax)
   10106b:	68 98 17 10 00       	push   $0x101798
-  101070:	6a 64                	push   $0x64
+  101070:	6a 65                	push   $0x65
   101072:	68 6d 17 10 00       	push   $0x10176d
   101077:	68 80 17 10 00       	push   $0x101780
   10107c:	e8 ff 02 00 00       	call   101380 <printk>
@@ -1486,7 +1486,7 @@ Disassembly of section .text:
   101089:	e8 f2 02 00 00       	call   101380 <printk>
   10108e:	5a                   	pop    %edx
   10108f:	59                   	pop    %ecx
-  101090:	6a 65                	push   $0x65
+  101090:	6a 66                	push   $0x66
   101092:	68 6d 17 10 00       	push   $0x10176d
   101097:	e8 58 04 00 00       	call   1014f4 <abort>
   10109c:	83 c4 10             	add    $0x10,%esp

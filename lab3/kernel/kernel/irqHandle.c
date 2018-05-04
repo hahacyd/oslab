@@ -51,11 +51,12 @@ void irqHandle(struct TrapFrame *tf)
 		assert(0);
 	}
 	if ((0x80 == tf->irq || 0x20 == tf->irq) && getpid() != x) //说明切进程了
-	{
-		*esp = (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1) - 0x3c;
+	{	//进入这个函数说明已经切换进程了，且内核栈已经切换了
+		//这有一个不好理解的地方是，esp是栈帧后的一个地址，在asmDoIrq里我把add 4 %esp 改成了popl %esp,这样esp会被定位到新进程的内核栈，
+		*esp = (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1) - 0x3c;   //直接定位到内核栈的栈帧部分，
 
 		TrapFrame2 *temp = (void *)(*esp);
-		*temp = pcb[getpid()].tf;
+		*temp = pcb[getpid()].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
 	}
 	//printk("tf = 0x%x stack = 0x%x", (uint32_t)tf, (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
 	//LOG("sizeof= 0x%x", sizeof(TrapFrame2));
