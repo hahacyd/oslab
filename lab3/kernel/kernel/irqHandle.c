@@ -16,16 +16,17 @@ void irqHandle(struct TrapFrame *tf)
 	/* Reassign segment register */
 	//putChar('x');
 	//pcb[current_running_pid].tf = *(TrapFrame2 *)tf;
-//LOG("tf = %x", (uint32_t)tf);
+	//LOG("tf = %x", (uint32_t)tf);
 	//assert(0);
 	//tf = (void*)1;
 	uint32_t ebp = 0;
 	asm volatile("movl %%ebp,%0"
 				 : "=m"(ebp));
-		
+
 	uint32_t *esp = (void *)ebp + 8;
 	//现在只要修改*esp的值就可以改变 esp寄存器指向的内核地址了，
 	assert(*esp == (uint32_t)tf);
+	int32_t x = getpid();
 
 	//asm volatile("movl %0,%%ebp" ::"m"(esp));
 	//asm volatile("movl %0,%%")
@@ -42,13 +43,25 @@ void irqHandle(struct TrapFrame *tf)
 		syscallHandle(tf);
 		break;
 	case 0x20:
+
 		timeHandle(tf);
+
 		break;
 	default:
 		assert(0);
 	}
+	if ((0x80 == tf->irq || 0x20 == tf->irq) && getpid() != x) //说明切进程了
+	{
+		*esp = (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1) - 0x3c;
+
+		TrapFrame2 *temp = (void *)(*esp);
+		*temp = pcb[getpid()].tf;
+	}
+	//printk("tf = 0x%x stack = 0x%x", (uint32_t)tf, (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
+	//LOG("sizeof= 0x%x", sizeof(TrapFrame2));
+	//assert(0);
 	//printk("core_esp = %x", pcb[getpid()].core_esp);
-	//*esp = pcb[getpid()].core_esp;
+
 	enableInterrupt();
 	return;
 	//this will screctly change process context by change current_running_pid;
@@ -76,7 +89,7 @@ void syscallHandle(struct TrapFrame *tf)
 		tf->eax = sys_fork(tf);
 		break;
 	default:
-			return;/**/
+		return; /**/
 	}
 	return;
 	//enterUserSpace(1);
@@ -84,7 +97,7 @@ void syscallHandle(struct TrapFrame *tf)
 void GProtectFaultHandle(struct TrapFrame *tf)
 {
 	//printk("%d \n", tf->irq);
-	LOG("%d \n",tf->irq);
+	LOG("%d \n", tf->irq);
 	assert(0);
 	return;
 }
@@ -94,12 +107,12 @@ void GProtectFaultHandle(struct TrapFrame *tf)
 void timeHandle(struct TrapFrame *tf)
 {
 	putChar('A');
-	 //GET_PCB(GET_CUR_PID).tf = *(TrapFrame2*)tf;
+	//GET_PCB(GET_CUR_PID).tf = *(TrapFrame2*)tf;
 	//assert(1 == GET_CUR_PID);
 
 	//LOG("tf->eip = 0x%x", ((TrapFrame2 *)tf)->eip);
 	pcb[getpid()].timeCount -= 1;
-	
+
 	block_decrease();
 	checkTimeCount(tf);
 	putChar('E');
