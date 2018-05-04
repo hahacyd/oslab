@@ -1,8 +1,6 @@
 #include "common.h"
 #include "x86.h"
 #include "device.h"
-
-
 typedef enum {
 	str = 0,
 	dec = 1,

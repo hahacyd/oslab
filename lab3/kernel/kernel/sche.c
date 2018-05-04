@@ -10,17 +10,11 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
 {
     if (pid == current_running_pid)
         return 1;
-
+        
     GET_CUR_PID = pid;
-
-    //*tf = pcb[GET_CUR_PID].tf;
-    //assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
-    //assert(0);
-    //LOG("tss esp0 = %x", get_tss().esp0);
-
     if (0 == pid)  //现在切换tss.esp0的值，在下次来内核态时用这个值，
     {
-        change_gdt(KSEL(SEG_KDATA), getpid() * 1000);
+        //change_gdt(KSEL(SEG_KDATA), getpid() * 1000);
 
         change_tss(KSEL(SEG_KDATA), (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
         assert(get_tss().esp0 == (uint32_t)(pcb[0].stack + MAX_STACK_SIZE - 1));
@@ -321,6 +315,8 @@ int32_t init_kernel_pcb()
     //pcb[0].tf.eip;
     pcb[0].tf.ss = KSEL(SEG_KDATA);
     pcb[0].tf.cs = KSEL(SEG_KCODE);
+    pcb[0].tf.ds = KSEL(SEG_KDATA);
+
     pcb[0].tf.eip = (uint32_t)IDLE;
     pcb[0].tf.esp = 127 << 20;
 

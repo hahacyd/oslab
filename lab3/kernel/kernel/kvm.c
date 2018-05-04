@@ -143,8 +143,13 @@ void enterUserSpace(uint32_t entry)
 	loaded = 1;
 #endif
 	GET_PCB(1).tf.ss = USEL(SEG_UDATA);
-	GET_PCB(1).tf.esp = 5 << 20;
 	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
+	GET_PCB(1).tf.ds = USEL(SEG_UDATA);
+	GET_PCB(1).tf.es = USEL(SEG_UDATA);
+	GET_PCB(1).tf.fs = USEL(SEG_UDATA);
+
+
+	GET_PCB(1).tf.esp = APP_STACK_START;
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;
 
