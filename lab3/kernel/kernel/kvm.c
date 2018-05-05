@@ -159,8 +159,7 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.es = USEL(SEG_UDATA);
 	GET_PCB(1).tf.fs = USEL(SEG_UDATA);
 
-
-	GET_PCB(1).tf.esp = APP_STACK_START + PROC_MEMSZ;
+	GET_PCB(1).tf.esp = APP_STACK_START;//+PROC_MEMSZ;
 	GET_PCB(1).tf.eip = entry;
 	GET_PCB(1).timeCount = 10;
 

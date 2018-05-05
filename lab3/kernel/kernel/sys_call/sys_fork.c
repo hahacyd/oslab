@@ -15,21 +15,17 @@ int32_t sys_fork(TrapFrame2 *tf){
     uint32_t src = APP_STACK_START + getpid() * PROC_MEMSZ;
     uint32_t dst = APP_STACK_START + childpid * PROC_MEMSZ;
     for (int i = 0; i < PROC_MEMSZ;i++){
-        *(uint8_t *)(dst - i) = *(uint8_t *)(src - i);
+        *((uint8_t *)dst - i) = *((uint8_t *)src - i);
     }
 
     GET_PCB(childpid).tf = *(TrapFrame2 *)tf; //GET_PCB(1).tf;
 
     GET_PCB(childpid).tf.eax = 0;
-    GET_PCB(childpid).tf.esp = APP_STACK_START + childpid * PROC_MEMSZ;
+    //GET_PCB(childpid).tf.esp = APP_STACK_START + childpid * PROC_MEMSZ;
 #ifdef DEBUG
     //LOG("interupt eip = 0x%x",GET_PCB(childpid).tf.eip);
     //LOG("interupt cs = 0x%x",GET_PCB(childpid).tf.cs);
 #endif
-    //assert(GET_PCB(childpid).tf.cs == USEL(SEG_UCODE));
-    //assert(GET_PCB(childpid).tf.ss == USEL(SEG_UDATA));
-
-    //assert(1 == GET_CUR_PID);
     assert(2 == childpid);
 
     put_into_runnable(childpid,&GET_PCB(childpid).tf);

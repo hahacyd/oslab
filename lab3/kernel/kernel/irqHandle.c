@@ -18,6 +18,8 @@ void irqHandle(struct TrapFrame2 *tf)
     asm volatile("movw %ax, %ds");
     asm volatile("movw %ax, %fs");
     asm volatile("movw %ax, %es");
+	asm volatile("movw %ax, %ss");
+
     asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO)));
     asm volatile("movw %ax, %gs");
 
@@ -70,6 +72,7 @@ void irqHandle(struct TrapFrame2 *tf)
 			//assert(0);
 		}*/
 		if(0 != getpid()){
+			LOG("pid: %d => %d", x, getpid());
 			change_gdt(USEL(SEG_UDATA), getpid() * PROC_MEMSZ);
 		}
 	}
@@ -79,10 +82,7 @@ void irqHandle(struct TrapFrame2 *tf)
 	//printk("core_esp = %x", pcb[getpid()].core_esp);
 
 	enableInterrupt();
-	/*if(getpid() == 2){
-				asm volatile("int $0x3");
 
-	}*/
 
 	return;
 	//this will screctly change process context by change current_running_pid;
@@ -117,7 +117,6 @@ void syscallHandle(TrapFrame2 *tf)
 }
 void GProtectFaultHandle(TrapFrame2 *tf)
 {
-	//printk("%d \n", tf->irq);
 	LOG("%d \n", tf->irq);
 	assert(0);
 	return;
