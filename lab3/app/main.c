@@ -4,22 +4,31 @@
 int data = 0;
 int uEntry(void)
 {
-	syscall(__NR_write, 1, (uint32_t)"address", 15, 0, 0);
+	//char x[100] = "i am cyd\n";
+	//printf("who are you?\n");
+	//char x[100] = "nihaoma ?wohenhao!\n";
+	//syscall(__NR_write, 1, (uint32_t)x, 45, 0, 0);
+	printf("ni hao a ?haha");
+	exit();
+	//syscall(__NR_write, 1, (uint32_t) "welcome to my zone!\n", 22, 0, 0);
+	//syscall(__NR_write, 1, (uint32_t)"you youyou\n", 22, 0, 0);
 
 	/*printf("cyd\n");
 	sleep(58);
 	printf("haha\n");
 	exit();*/
-	/*int ret = fork();
+	int ret = fork();
 	if(0 == ret){
+		//syscall(__NR_write, 1, (uint32_t) "yep ,you are child!\n", 22, 0, 0);
 		printf("i am child\n");
 	}
 	else{
-		//sleep(7);
+		//sleep(37);
+		//syscall(__NR_write, 1, (uint32_t) "yep ,you are father!\n", 22, 0, 0);
 		printf("i am parent\n");
 	}
-	printf("ret = %d\n",ret);
-	exit();*/
+	//printf("ret = %d\n",ret);/**/
+	exit();
 	/*
 	*/
 	//syscall(__NR_write, 1, (int)(char*)&"ni hao a?", 12, 0, 0);

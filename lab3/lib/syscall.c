@@ -5,7 +5,7 @@
  * 库函数写在这
  */
 #define MAX_BUFFER_SIZE 2048
-char sys_buffer[MAX_BUFFER_SIZE] = "this is sys_buffer\n";
+char sys_buffer[MAX_BUFFER_SIZE] = "print wrong answer!!!,\n";
 int i2A(int a, char **result);
 int i2X(uint32_t n, char **result);
 static int append(char *p, const char *str);
@@ -19,10 +19,13 @@ int32_t syscall(int num, uint32_t a1, uint32_t a2,
 	/* 内嵌汇编 保存 num, a1, a2, a3, a4, a5 至通用寄存器*/
 	// interrupt number
 	asm volatile("movl %0,%%eax" ::"m"(num));
+	
 	// file descriptor
 	asm volatile("movl %0,%%ebx" ::"m"(a1));
+
 	//the first address of str
 	asm volatile("movl %0,%%ecx" ::"m"(a2));
+
 	//the length of str
 	asm volatile("movl %0,%%edx" ::"m"(a3));
 	asm volatile("movl %0,%%edi" ::"m"(a4));
@@ -199,6 +202,16 @@ int memcpy(char* dst,char* src,int len){
 	*(dst) = '\0';
 	return len - i;
 }
+void printc(char c){
+	fs_write(1, &c, 1);
+}
+void prints(char* s){
+	int len = 0;
+	while (s[len] != '\0'){
+		len++;
+	}
+	fs_write(1, s, len);
+}
 int length_str(char* str){
 	int count = 0;
 	while(*(str++)){
@@ -244,6 +257,8 @@ void printf(const char *format, ...)
 		if (null == state)
 		{
 			sys_buffer[buf_ptr++] = *c;
+
+			//printc(*c);
 		}
 		else if (oct == state)
 		{
@@ -251,20 +266,28 @@ void printf(const char *format, ...)
 			char *t = (void *)0;
 			i2A((int)*ap++, &t);
 			buf_ptr += append(sys_buffer + buf_ptr, t);
+
+			//prints(t);
 		}
 		else if (dec == state)
 		{
 			char *t = (void *)0;
 			i2X((int)*ap++, &t);
 			buf_ptr += append(sys_buffer + buf_ptr, t);
+
+			//prints(t);
 		}
 		else if (str == state)
 		{
 			buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
+
+			//prints((char *)(*ap++));
 		} /**/
 		else if(word == state){
 			//buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
 			sys_buffer[buf_ptr++] = *ap++;
+
+			//printc(*ap++);
 		}
 	}
 	sys_buffer[buf_ptr++] = '\0';

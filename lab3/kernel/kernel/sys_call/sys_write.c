@@ -4,7 +4,8 @@ static int system_row = 0,
     system_col = 0;
 int printkernel(char *buf, int len)
 {
-    for (; *buf != '\0'; buf++)
+    int i = 0;
+    for (;i < len && *buf != '\0'; i++,buf++)
     {
         putChar(*buf);
         display(*buf);
@@ -56,7 +57,9 @@ int fs_write(int fd, char *buf, int len)
 }
 void sys_write(TrapFrame2 *tf)
 {
-    tf->eax = fs_write(tf->ebx, (void *)tf->ecx  + getpid() * PROC_MEMSZ, tf->edx);
+    //LOG("length = %d", tf->edx);
+    //assert(0);
+    tf->eax = fs_write(tf->ebx, (void *)tf->ecx, tf->edx);  // + getpid() * PROC_MEMSZ
 }
 void print_char(int row, int col, char c)
 {

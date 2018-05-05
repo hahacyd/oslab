@@ -62,11 +62,7 @@ void irqHandle(struct TrapFrame2 *tf)
 
 		TrapFrame2 *temp = (void *)(*esp);
 		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
-		/*if(getpid() == 2){
-			LOG("pid 2 esp = 0x%x", temp->esp);
-			asm volatile("int $0x3");
-			//assert(0);
-		}*/
+		
 		if(0 != GET_CUR_PID){
 			LOG("pid: %d => %d", x, GET_CUR_PID);
 			change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
@@ -87,6 +83,7 @@ void syscallHandle(TrapFrame2 *tf)
 	switch (tf->eax)
 	{
 	case __NR_write:
+		
 		sys_write(tf);
 		break;
 	case __NR_clock_nanosleep:

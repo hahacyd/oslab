@@ -15,13 +15,14 @@
 #define STS_TG32    0xF         // 32-bit Trap Gate
 
 // GDT entries
-#define NR_SEGMENTS      7           // GDT size
+#define NR_SEGMENTS      10           // GDT size
 #define SEG_KCODE   1           // Kernel code
 #define SEG_KDATA   2           // Kernel data/stack
 #define SEG_UCODE   3           // User code
 #define SEG_UDATA   4           // User data/stack
 #define SEG_TSS     5           // Global unique task state segement
 
+#define SEG_UDATA_STABLE 8
 #define SEG_VIDEO   6           // Vedio memory
 // Selectors
 #define KSEL(desc) (((desc) << 3) | DPL_KERN)
