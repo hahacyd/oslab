@@ -13,18 +13,15 @@
 #define __NR_clock_nanosleep 230
 int32_t syscall(uint32_t eax, uint32_t ebx, uint32_t ecx,uint32_t edx);
 void printf(const char *format,...);
+
 void printd(int a);
 void printc(char c);
-void prints(char *s);
+void prints(const char *s);
 void printx(int n);
 
-void fs_write(int fd, const char *address, int length);
 int fork();
 int sleep();
 int exit();
-
-
-
 
 #define LOG(format,...) \
     printf("\033[34m");\
