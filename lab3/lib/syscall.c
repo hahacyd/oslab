@@ -5,7 +5,6 @@
  * 库函数写在这
  */
 #define MAX_BUFFER_SIZE 2048
-char sys_buffer[MAX_BUFFER_SIZE] = "print wrong answer!!!,\n";
 int i2A(int a, char **result);
 int i2X(uint32_t n, char **result);
 static int append(char *p, const char *str);
@@ -81,9 +80,100 @@ void putchar_user(char ch)
 
 	tf->eax = fs_write(tf->ebx,tf->ecx,tf->edx);
 }*/
+void printd(int a){
+	char buf[31];
+	int count = 0;
+	char *p = buf + sizeof(buf) - 1;
+	uint8_t flag = 0, flag_8 = 0;
+	if (a < 0)
+	{
+		if (0x80000000 == a)
+		{
+			a++;
+			flag_8 = 1;
+		}
+		flag = 1; //if a < 0;flag = 1;
+		a = -a;
+	}
+	do
+	{
+		*--p = '0' + a % 10;
+		count++;
+	} while (a /= 10);
+	if (1 == flag)
+	{
+		*--p = '-';
+		count++;
+	}
+	if (1 == flag_8)
+	{
+		buf[29] += 1;
+	} /**/
+	buf[30] = '\0';
+	fs_write(1, p - 0x10000, count);
+}
+void printx(int n){
+
+	char buf[31];
+	char *p = buf + sizeof(buf) - 1;
+	int count = 0;
+	int i = 0;
+	/*if (0x80000000 == n)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			*(--p) = 'f';
+		}
+		*(--p) = 'x';
+		*(--p) = '0';
+		*(--p) = '-';
+		p = p - 9;
+		memcpy(p, "80000000", 8);
+		count = 8;
+		buf[30] = '\0';
+		*result = p;
+		return count;
+	}*/
+	//uint8_t flag = 0;
+	/*if (n < 0)
+	{
+		flag = 1;
+		n = -n;
+	}*/
+	do
+	{
+		count++;
+		i = n % 16;
+		switch (i)
+		{
+		case 10:
+			*(--p) = 'a';
+			break;
+		case 11:
+			*(--p) = 'b';
+			break;
+		case 12:
+			*(--p) = 'c';
+			break;
+		case 13:
+			*(--p) = 'd';
+			break;
+		case 14:
+			*(--p) = 'e';
+			break;
+		case 15:
+			*(--p) = 'f';
+			break;
+		default:
+			*(--p) = '0' + i;
+		}
+	} while (n /= 16);
+	buf[30] = '\0';
+	fs_write(1, p - 0x10000, count);
+}
 int i2A(int a, char **result)
 {
-	static char buf[31];
+	char buf[31];
 	int count = 0;
 	char *p = buf + sizeof(buf) - 1;
 	uint8_t flag = 0, flag_8 = 0;
@@ -202,15 +292,15 @@ int memcpy(char* dst,char* src,int len){
 	*(dst) = '\0';
 	return len - i;
 }
-void printc(char c){
-	fs_write(1, &c, 1);
+void printc(char* c){
+	fs_write(1, c - 0x10000, 1);
 }
 void prints(char* s){
 	int len = 0;
 	while (s[len] != '\0'){
 		len++;
 	}
-	fs_write(1, s, len);
+	fs_write(1, s - 0x10000, len);
 }
 int length_str(char* str){
 	int count = 0;
@@ -221,6 +311,8 @@ int length_str(char* str){
 }
 void printf(const char *format, ...)
 {
+	char sys_buffer[MAX_BUFFER_SIZE] = "print wrong answer!!!,\n";
+
 	int buf_ptr = 0;
 	uint32_t *ap = (uint32_t *)(void *)&format + 1;
 	//fs_write(1,i2A(3431),10);
@@ -258,15 +350,15 @@ void printf(const char *format, ...)
 		{
 			sys_buffer[buf_ptr++] = *c;
 
-			//printc(*c);
+			//printc(c);
 		}
 		else if (oct == state)
 		{
 			//int len = 0;
-			char *t = (void *)0;
-			i2A((int)*ap++, &t);
-			buf_ptr += append(sys_buffer + buf_ptr, t);
-
+			//char *t = (void *)0;
+			//i2A((int)*ap++, &t);
+			//buf_ptr += append(sys_buffer + buf_ptr, t);
+			printd(*ap++);
 			//prints(t);
 		}
 		else if (dec == state)
@@ -279,11 +371,19 @@ void printf(const char *format, ...)
 		}
 		else if (str == state)
 		{
-			buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
+			//prints((char*)*ap++);
+			//buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
+			//uint8_t *src = (uint8_t*)*ap++,
+			//		*dst = (uint8_t*)sys_buffer + buf_ptr;
 
+			/*while(*src != '\0'){
+				*dst++ = *src;
+				buf_ptr += 1;
+			}*/
 			//prints((char *)(*ap++));
 		} /**/
 		else if(word == state){
+
 			//buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
 			sys_buffer[buf_ptr++] = *ap++;
 
@@ -291,5 +391,5 @@ void printf(const char *format, ...)
 		}
 	}
 	sys_buffer[buf_ptr++] = '\0';
-	fs_write(1, sys_buffer, buf_ptr);
+	//fs_write(1, sys_buffer, buf_ptr);
 }

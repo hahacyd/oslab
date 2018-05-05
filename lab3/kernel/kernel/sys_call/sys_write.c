@@ -59,7 +59,7 @@ void sys_write(TrapFrame2 *tf)
 {
     //LOG("length = %d", tf->edx);
     //assert(0);
-    tf->eax = fs_write(tf->ebx, (void *)tf->ecx, tf->edx);  // + getpid() * PROC_MEMSZ
+    tf->eax = fs_write(tf->ebx, (void *)tf->ecx  + getpid() * PROC_MEMSZ, tf->edx);  // + getpid() * PROC_MEMSZ
 }
 void print_char(int row, int col, char c)
 {

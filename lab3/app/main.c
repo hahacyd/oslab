@@ -4,11 +4,16 @@
 int data = 0;
 int uEntry(void)
 {
-	//char x[100] = "i am cyd\n";
+	//char x[100] = "xinyun";
 	//printf("who are you?\n");
 	//char x[100] = "nihaoma ?wohenhao!\n";
 	//syscall(__NR_write, 1, (uint32_t)x, 45, 0, 0);
-	printf("ni hao a ?haha");
+	//printd(2333333);
+	//prints("haha");
+	//printc("x");
+	printx(432412);
+	//printf("M%d", 78);
+	//printf("i am from xinjiang %s",x);
 	exit();
 	//syscall(__NR_write, 1, (uint32_t) "welcome to my zone!\n", 22, 0, 0);
 	//syscall(__NR_write, 1, (uint32_t)"you youyou\n", 22, 0, 0);
@@ -23,11 +28,11 @@ int uEntry(void)
 		printf("i am child\n");
 	}
 	else{
-		//sleep(37);
+		sleep(37);
 		//syscall(__NR_write, 1, (uint32_t) "yep ,you are father!\n", 22, 0, 0);
 		printf("i am parent\n");
 	}
-	//printf("ret = %d\n",ret);/**/
+	printf("ret = %d\n",ret);/**/
 	exit();
 	/*
 	*/

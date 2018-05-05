@@ -14,7 +14,12 @@
 int32_t syscall(int num, uint32_t a1, uint32_t a2,
 				uint32_t a3, uint32_t a4, uint32_t a5);
 void printf(const char *format,...);
-void fs_write(int fd,const char* address,int length);
+void printd(int a);
+void printc(char *c);
+void prints(char *s);
+void printx(int a);
+
+void fs_write(int fd, const char *address, int length);
 int fork();
 int sleep();
 int exit();
