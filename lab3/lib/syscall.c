@@ -101,7 +101,8 @@ void prints(const char *s)
 	{
 		len++;
 	}
-	syscall(__NR_write, 1, (uint32_t)s - 0x10000, len);
+	//int t = getpid();
+	syscall(__NR_write, 1, (uint32_t)s - PROC_MEMSZ, len);
 }
 
 /*void printf(const char *str, ...) {
@@ -132,7 +133,7 @@ void printf(const char *format, ...)
 {
 	uint32_t *ap = (uint32_t *)(void *)&format + 1;
 
-	ap = ap + (0x10000 >> 2);
+	ap += (PROC_MEMSZ >> 2); //gdt表中的基地址偏移，给子函数传递正确的参数；
 
 	char *c = (void *)format;
 	int32_t d = 0;

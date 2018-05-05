@@ -15,7 +15,7 @@ int uEntry(void)
 	//int a = 12;
 	//prints("fjdkslaf");
 	//printx(43242);
-	//printd(8765857);
+	printd(getpid());
 	//printf("%d", 12);
 	//printf("M%d", 78);
 	//printf("i am from xinjiang %s",x);

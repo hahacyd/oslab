@@ -25,5 +25,6 @@ void enterUserSpace(uint32_t entry);
 int32_t sys_fork(TrapFrame2 *tf);
 int32_t sys_exit(TrapFrame2 *tf);
 int32_t sys_sleep(TrapFrame2 * tf);
+int32_t sys_getpid(TrapFrame2 *tf);
 void sys_write(TrapFrame2 *tf);
 #endif

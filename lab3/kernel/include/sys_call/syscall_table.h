@@ -8,7 +8,7 @@
 #define __NR_write 4
 #define __NR_open 5
 #define __NR_close 6
-#define __NR_waitpid 7
+#define __NR_getpid 7
 #define __NR_clock_nanosleep 230
 
 

@@ -95,6 +95,8 @@ void syscallHandle(TrapFrame2 *tf)
 	case __NR_fork:
 		tf->eax = sys_fork(tf);
 		break;
+	case __NR_getpid:
+		tf->eax = sys_getpid(tf);
 	default:
 		return; /**/
 	}
