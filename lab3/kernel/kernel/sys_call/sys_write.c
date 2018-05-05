@@ -36,7 +36,11 @@ int fs_write(int fd, char *buf, int len)
     asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO))
                  : "eax");
     asm volatile("movw %ax, %gs");
-    assert(fd == 1);
+    assert(fd == 1 || fd == 2);
+
+
+
+    //buf += 
     printkernel(buf, len);
     //putChar(*buf);
     //printkernel(buf, len);
@@ -52,7 +56,7 @@ int fs_write(int fd, char *buf, int len)
 }
 void sys_write(TrapFrame2 *tf)
 {
-    tf->eax = fs_write(tf->ebx, (void *)tf->ecx, tf->edx);
+    tf->eax = fs_write(tf->ebx, (void *)tf->ecx + getpid() * PROC_MEMSZ, tf->edx);
 }
 void print_char(int row, int col, char c)
 {

@@ -15,6 +15,7 @@ struct TrapFrame {
 };
 */
 #define APP_STACK_START (4 << 20)
+#define PROC_MEMSZ (1 << 12)
 typedef struct TrapFrame2
 {
     uint32_t gs, fs, es, ds;

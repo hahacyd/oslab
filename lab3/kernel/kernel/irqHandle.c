@@ -70,7 +70,7 @@ void irqHandle(struct TrapFrame2 *tf)
 			//assert(0);
 		}*/
 		if(0 != getpid()){
-			//change_gdt(USEL(SEG_UDATA), getpid() * 0x1000);
+			change_gdt(USEL(SEG_UDATA), getpid() * PROC_MEMSZ);
 		}
 	}
 	//printk("tf = 0x%x stack = 0x%x", (uint32_t)tf, (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
