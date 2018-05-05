@@ -10,13 +10,13 @@ int uEntry(void)
 	//syscall(__NR_write, 1, (uint32_t)x, 45, 0, 0);
 	//printd(2333333);
 	//prints("haha");
-	//printc("x");
 	//printx(432412);
 	//printf("fjdksafjas");
 	//int a = 12;
 	//prints("fjdkslaf");
-	printd(8765857);
-	printf("%d", 12);
+	//printx(43242);
+	//printd(8765857);
+	//printf("%d", 12);
 	//printf("M%d", 78);
 	//printf("i am from xinjiang %s",x);
 	exit();

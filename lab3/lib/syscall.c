@@ -1,6 +1,6 @@
 #include "lib.h"
 #include "types.h"
-#include <stdarg.h>
+//#include <stdarg.h>
 /*
  * io lib here
  * 库函数写在这
@@ -24,6 +24,9 @@ int sleep(int32_t time)
 {
 	syscall(__NR_clock_nanosleep, time, 0, 0);
 	return 0;
+}
+int getpid(){
+	return syscall(__NR_getpid, 1, (uint32_t)(char *)&"ni hao a", 13);
 }
 int exit()
 {
@@ -68,68 +71,23 @@ void printd(int a)
 	} /**/
 	buf[30] = '\0';
 	prints(p);
-	//fs_write(1, p - 0x10000, count);// - 0x10000
 }
 void printx(int n)
 {
 
 	char buf[31];
 	char *p = buf + sizeof(buf) - 1;
-	int count = 0;
 	int i = 0;
-	/*if (0x80000000 == n)
-	{
-		for (int i = 0; i < 8; i++)
-		{
-			*(--p) = 'f';
-		}
-		*(--p) = 'x';
-		*(--p) = '0';
-		*(--p) = '-';
-		p = p - 9;
-		memcpy(p, "80000000", 8);
-		count = 8;
-		buf[30] = '\0';
-		*result = p;
-		return count;
-	}*/
-	//uint8_t flag = 0;
-	/*if (n < 0)
-	{
-		flag = 1;
-		n = -n;
-	}*/
 	do
 	{
-		count++;
 		i = n % 16;
-		switch (i)
-		{
-		case 10:
-			*(--p) = 'a';
-			break;
-		case 11:
-			*(--p) = 'b';
-			break;
-		case 12:
-			*(--p) = 'c';
-			break;
-		case 13:
-			*(--p) = 'd';
-			break;
-		case 14:
-			*(--p) = 'e';
-			break;
-		case 15:
-			*(--p) = 'f';
-			break;
-		default:
+		if(i >= 10)
+			*(--p) = 'a' + i - 10;
+		else
 			*(--p) = '0' + i;
-		}
 	} while (n /= 16);
 	buf[30] = '\0';
 	prints(p);
-	//fs_write(1, p - 0x10000, count);
 }
 
 void printc(char c)
@@ -173,10 +131,11 @@ void prints(const char *s)
 void printf(const char *format, ...)
 {
 	uint32_t *ap = (uint32_t *)(void *)&format + 1;
+
+	ap = ap + (0x10000 >> 2);
+
 	char *c = (void *)format;
 	int32_t d = 0;
-	if(d)
-		;
 	for (; *c != '\0'; c++)
 	{
 		if ('%' == *c)
@@ -200,9 +159,7 @@ void printf(const char *format, ...)
 				break;
 			}
 		}
-		else
-		{
+		else 
 			printc(*c);
-		}
 	}
 }

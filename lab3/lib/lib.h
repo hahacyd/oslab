@@ -8,7 +8,7 @@
 #define __NR_write 4
 #define __NR_open 5
 #define __NR_close 6
-#define __NR_waitpid 7
+#define __NR_getpid 7
 
 #define __NR_clock_nanosleep 230
 int32_t syscall(uint32_t eax, uint32_t ebx, uint32_t ecx,uint32_t edx);
