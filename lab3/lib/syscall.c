@@ -5,7 +5,7 @@
  * 库函数写在这
  */
 #define MAX_BUFFER_SIZE 2048
-char sys_buffer[MAX_BUFFER_SIZE];
+char sys_buffer[MAX_BUFFER_SIZE] = "this is sys_buffer\n";
 int i2A(int a, char **result);
 int i2X(uint32_t n, char **result);
 static int append(char *p, const char *str);
@@ -68,7 +68,7 @@ int exit(){
 
 void fs_write(int fd, const char *address, int length)
 {
-	syscall(__NR_write, fd, (int)address, length, 0, 0);
+	syscall(__NR_write, fd, (uint32_t)address, length, 0, 0);
 }
 void putchar_user(char ch)
 {

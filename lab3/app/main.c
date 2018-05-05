@@ -4,11 +4,13 @@
 int data = 0;
 int uEntry(void)
 {
+	syscall(__NR_write, 1, (uint32_t)"address", 15, 0, 0);
+
 	/*printf("cyd\n");
 	sleep(58);
 	printf("haha\n");
 	exit();*/
-	int ret = fork();
+	/*int ret = fork();
 	if(0 == ret){
 		printf("i am child\n");
 	}
@@ -17,7 +19,7 @@ int uEntry(void)
 		printf("i am parent\n");
 	}
 	printf("ret = %d\n",ret);
-	exit();
+	exit();*/
 	/*
 	*/
 	//syscall(__NR_write, 1, (int)(char*)&"ni hao a?", 12, 0, 0);

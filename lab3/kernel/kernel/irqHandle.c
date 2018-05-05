@@ -31,11 +31,7 @@ void irqHandle(struct TrapFrame2 *tf)
 	//现在只要修改*esp的值就可以改变 esp寄存器指向的内核地址了，
 
 	assert(*esp == (uint32_t)tf);
-	int32_t x = getpid();
-
-		if(0 != getpid()){
-			//change_gdt(USEL(SEG_UDATA), 0);
-		}
+	int32_t x = GET_CUR_PID;
 	//asm volatile("movl %0,%%ebp" ::"m"(esp));
 	//asm volatile("movl %0,%%")
 	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
@@ -59,34 +55,27 @@ void irqHandle(struct TrapFrame2 *tf)
 		LOG("irq = %d eip = 0x%x", tf->irq,tf->eip);
 		assert(0);
 	}
-	if ((0x80 == tf->irq || 0x20 == tf->irq) && getpid() != x) //说明切进程了
+	if ((0x80 == tf->irq || 0x20 == tf->irq) && GET_CUR_PID != x) //说明切进程了
 	{	//进入这个函数说明已经切换进程了，且内核栈已经切换了
 		//这有一个不好理解的地方是，esp是栈帧后的一个地址，在asmDoIrq里我把add 4 %esp 改成了popl %esp,这样esp会被定位到新进程的内核栈，
-		*esp = (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1) - 0x3c - 0x10;   //直接定位到内核栈的栈帧部分，
+		*esp = (uint32_t)(pcb[GET_CUR_PID].stack + MAX_STACK_SIZE - 1) - 0x3c - 0x10;   //直接定位到内核栈的栈帧部分，
 
 		TrapFrame2 *temp = (void *)(*esp);
-		*temp = pcb[getpid()].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
+		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
 		/*if(getpid() == 2){
 			LOG("pid 2 esp = 0x%x", temp->esp);
 			asm volatile("int $0x3");
 			//assert(0);
 		}*/
-		if(0 != getpid()){
-			LOG("pid: %d => %d", x, getpid());
-			change_gdt(USEL(SEG_UDATA), getpid() * PROC_MEMSZ);
+		if(0 != GET_CUR_PID){
+			LOG("pid: %d => %d", x, GET_CUR_PID);
+			change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
 		}
 	}
-	//printk("tf = 0x%x stack = 0x%x", (uint32_t)tf, (uint32_t)(pcb[getpid()].stack + MAX_STACK_SIZE - 1));
-	//LOG("sizeof= 0x%x", sizeof(TrapFrame2));
-	//assert(0);
-	//printk("core_esp = %x", pcb[getpid()].core_esp);
 
 	enableInterrupt();
 
-
 	return;
-	//this will screctly change process context by change current_running_pid;
-	//*(TrapFrame2 *)tf = pcb[current_running_pid].tf;
 }
 
 void syscallHandle(TrapFrame2 *tf)
