@@ -11,7 +11,12 @@ int uEntry(void)
 	//printd(2333333);
 	//prints("haha");
 	//printc("x");
-	printx(432412);
+	//printx(432412);
+	//printf("fjdksafjas");
+	//int a = 12;
+	//prints("fjdkslaf");
+	printd(8765857);
+	printf("%d", 12);
 	//printf("M%d", 78);
 	//printf("i am from xinjiang %s",x);
 	exit();

@@ -11,13 +11,12 @@
 #define __NR_waitpid 7
 
 #define __NR_clock_nanosleep 230
-int32_t syscall(int num, uint32_t a1, uint32_t a2,
-				uint32_t a3, uint32_t a4, uint32_t a5);
+int32_t syscall(uint32_t eax, uint32_t ebx, uint32_t ecx,uint32_t edx);
 void printf(const char *format,...);
 void printd(int a);
-void printc(char *c);
+void printc(char c);
 void prints(char *s);
-void printx(int a);
+void printx(int n);
 
 void fs_write(int fd, const char *address, int length);
 int fork();
