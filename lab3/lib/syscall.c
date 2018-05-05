@@ -133,7 +133,7 @@ void printf(const char *format, ...)
 {
 	uint32_t *ap = (uint32_t *)(void *)&format + 1;
 
-	ap += (PROC_MEMSZ >> 2); //gdt表中的基地址偏移，给子函数传递正确的参数；
+	ap += ((getpid() * PROC_MEMSZ) >> 2); //gdt表中的基地址偏移，给子函数传递正确的参数；
 
 	char *c = (void *)format;
 	int32_t d = 0;

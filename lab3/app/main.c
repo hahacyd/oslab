@@ -15,8 +15,8 @@ int uEntry(void)
 	//int a = 12;
 	//prints("fjdkslaf");
 	//printx(43242);
-	printd(getpid());
-	//printf("%d", 12);
+	//printd(getpid());
+	printf("%d", 12);
 	//printf("M%d", 78);
 	//printf("i am from xinjiang %s",x);
 	exit();
@@ -33,7 +33,7 @@ int uEntry(void)
 		printf("i am child\n");
 	}
 	else{
-		sleep(37);
+		//sleep(37);
 		//syscall(__NR_write, 1, (uint32_t) "yep ,you are father!\n", 22, 0, 0);
 		printf("i am parent\n");
 	}
