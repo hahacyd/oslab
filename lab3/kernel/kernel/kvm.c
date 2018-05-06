@@ -169,8 +169,8 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(newpid).timeCount = 10;
 
 	
-	put_into_runnable(newpid,NULL);
-	
+	put_into_runnable(newpid,&GET_PCB(newpid).tf);
+
 	enterUserSpace_pcb(0);
 	//GET_PCB(1).state = RUNNING;
 	//enterUserSpace_pcb(1);

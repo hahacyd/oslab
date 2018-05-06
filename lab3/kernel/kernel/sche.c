@@ -6,7 +6,7 @@ static int32_t runnable_query = -1,
                //running_query = 1,
     block_query = -1; /* */
 
-int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
+int32_t put_into_running(int32_t pid, TrapFrame *tf)
 {
     if (pid == current_running_pid)
         return 1;
@@ -17,7 +17,7 @@ int32_t put_into_running(int32_t pid, TrapFrame2 *tf)
     return 1;
 }
 
-int32_t checkTimeCount(TrapFrame2 *tf)
+int32_t checkTimeCount(TrapFrame *tf)
 {
 #ifdef DEBUG
     LOG("pid = %d timecount = %d", GET_CUR_PID, pcb[GET_CUR_PID].timeCount);
@@ -26,8 +26,6 @@ int32_t checkTimeCount(TrapFrame2 *tf)
 
     if (pcb[GET_CUR_PID].timeCount <= 0)
     {
-        pcb[GET_CUR_PID].tf = *tf; //save pcb context;
-
         put_into_runnable(GET_CUR_PID, tf);
 
         int32_t x = get_from_runnable();
@@ -38,9 +36,11 @@ int32_t checkTimeCount(TrapFrame2 *tf)
 }
 int32_t apply_new_pid()
 {
-    //int32_t res = 2; //empty_query;
     int32_t res = get_from(empty_query, empty_query);
     return res;
+}
+int32_t put_into_empty(int32_t pid){
+    return put_into(EMPTY, pid);
 }
 int32_t getpid()
 {
@@ -59,19 +59,19 @@ int32_t get_from_runnable()
 {
     return get_from(runnable_query, runnable_query);
 }
-int32_t put_into_runnable(int32_t pid, TrapFrame2 *tf)
+int32_t put_into_runnable(int32_t pid, TrapFrame *tf)
 {
 #ifdef DEBUG
     LOG("left pid = %d put in pid = %d,", runnable_query, pid);
 #endif
-    //pcb[pid].tf = *tf;
+    pcb[pid].tf = *tf;
 
     if (0 == pid)
     {
         pcb[pid].tf.eip = (uint32_t)IDLE;
     }
     pcb[pid].timeCount = initTimeCount;
-    pcb[pid].core_esp = (uint32_t)tf;
+    //pcb[pid].core_esp = (uint32_t)tf;
     pcb[pid].state = RUNNABLE;
 
     return put_into(RUNNABLE, pid);
@@ -137,7 +137,7 @@ int32_t put_into(int32_t mode, int32_t pid)
     }
     return 1;
 }
-int32_t put_into_block(int32_t pid, TrapFrame2 *tf)
+int32_t put_into_block(int32_t pid, TrapFrame *tf)
 {
     pcb[pid].tf = *tf;
     pcb[pid].sleeptime = tf->ebx;
@@ -229,7 +229,6 @@ int32_t block_decrease()
 
     return 1;
 }
-int32_t put_into_dead();
 
 void init_pcb()
 {
@@ -266,7 +265,7 @@ int32_t init_kernel_pcb()
     return 1;
 }
 
-int32_t make_pcb(int32_t pid, TrapFrame2 *tf, uint32_t state, uint32_t timeCount, uint32_t sleeptime)
+int32_t make_pcb(int32_t pid, TrapFrame *tf, uint32_t state, uint32_t timeCount, uint32_t sleeptime)
 {
     pcb[pid].tf = *tf;
     pcb[pid].state = state;

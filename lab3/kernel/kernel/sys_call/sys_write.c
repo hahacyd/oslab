@@ -43,19 +43,9 @@ int fs_write(int fd, char *buf, int len)
 
     //buf += 
     printkernel(buf, len);
-    //putChar(*buf);
-    //printkernel(buf, len);
-    //putChar('c');
-    //putChar('y');
-    //if (1 == fd)
-    //{
-    /*for(int i = 0;i < len;i++){
-			putChar(buf[i]);
-		}*/
-    //}
     return len;
 }
-void sys_write(TrapFrame2 *tf)
+void sys_write(TrapFrame *tf)
 {
     //LOG("length = %d", tf->edx);
     //assert(0);

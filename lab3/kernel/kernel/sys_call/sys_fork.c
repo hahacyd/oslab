@@ -1,7 +1,7 @@
 #include "x86.h"
 #include "device.h"
 
-int32_t sys_fork(TrapFrame2 *tf){
+int32_t sys_fork(TrapFrame *tf){
     int32_t childpid = apply_new_pid();
 
     //copy kernel stack
@@ -16,7 +16,7 @@ int32_t sys_fork(TrapFrame2 *tf){
         *((uint8_t *)dst - i) = *((uint8_t *)src - i);
     }
 
-    GET_PCB(childpid).tf = *(TrapFrame2 *)tf; //GET_PCB(1).tf;
+    GET_PCB(childpid).tf = *tf; //GET_PCB(1).tf;
 
     GET_PCB(childpid).tf.eax = 0;
 

@@ -16,14 +16,14 @@ struct TrapFrame {
 */
 #define APP_STACK_START (4 << 20)
 #define PROC_MEMSZ (1 << 16)
-typedef struct TrapFrame2
+typedef struct TrapFrame
 {
     uint32_t gs, fs, es, ds;
     uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;
     int32_t irq;    //interrupt no
 	uint32_t error_code, eip, cs, eflags;
     uint32_t esp, ss; // exists only when CPL changes
-} TrapFrame2;
+} TrapFrame;
 //below defines is for Process state
 #define RUNNABLE 1
 #define RUNNING 2
@@ -41,7 +41,7 @@ int32_t initTimeCount;
 typedef struct ProcessTable
 {
     uint32_t stack[MAX_STACK_SIZE]; //kernel core stack;
-    TrapFrame2 tf;
+    TrapFrame tf;
     int state;
     int timeCount;
     int sleeptime;
@@ -59,9 +59,9 @@ typedef struct Pcb_ptr
     uint32_t pcb_no;
 } Pcb_ptr;
 
-int32_t put_into_running(int32_t pid,TrapFrame2* tf);
-int32_t put_into_runnable(int32_t pid,TrapFrame2* tf);
-int32_t put_into_block(int32_t pid,TrapFrame2 *tf);
+int32_t put_into_running(int32_t pid,TrapFrame* tf);
+int32_t put_into_runnable(int32_t pid,TrapFrame* tf);
+int32_t put_into_block(int32_t pid,TrapFrame *tf);
 int32_t put_into_dead(int32_t pid);
 
 int32_t get_from_runnable();
@@ -84,7 +84,8 @@ int32_t getblocked();
 int32_t get_from(int32_t mode, int32_t pid);
 int32_t put_into(int32_t mode, int32_t pid);
 int32_t apply_new_pid();
-int32_t make_pcb(int32_t pid, TrapFrame2 *tf, uint32_t state, uint32_t timeCount, uint32_t sleeptime);
+int32_t put_into_empty(int32_t pid);
+int32_t make_pcb(int32_t pid, TrapFrame *tf, uint32_t state, uint32_t timeCount, uint32_t sleeptime);
 void enterUserSpace_pcb(int32_t pid);
 
 
