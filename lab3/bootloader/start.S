@@ -31,8 +31,8 @@ start32:
 
 #	#Set up a stack for C code
 
-	#movl $0, %ebp
-	#movl $(128 << 20), %esp
+#	movl $0, %ebp
+#	movl $(128 << 20), %esp
 	jmp bootMain                #jmp to bootMain function,defined by boot.c
 .p2align 2
 gdt: # 8 bytes for each table entry, at least 1 entry
