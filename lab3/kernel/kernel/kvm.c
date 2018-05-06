@@ -1,6 +1,5 @@
 #include "x86.h"
 #include "device.h"
-//ProcessTable pcb[MAX_PCB_NUM];
 SegDesc gdt[NR_SEGMENTS];
 TSS tss;
 
@@ -32,9 +31,6 @@ int32_t change_tss(uint32_t ss0, uint32_t esp0)
 {
 	tss.ss0 = ss0;
 	tss.esp0 = esp0;
-	//asm volatile("ltr %%ax" ::"a"(KSEL(SEG_TSS)));
-	//assert(0);
-
 	return 1;
 }
 TSS get_tss(){
@@ -54,7 +50,7 @@ void readSect(void *dst, int offset) {
 	outByte(0x1F5, offset >> 16);
 	outByte(0x1F6, (offset >> 24) | 0xE0);
 	outByte(0x1F7, 0x20);
- //
+ 
 	waitDisk(); 
 	for (i = 0; i < SECTSIZE / 4; i ++) {
 		((int *)dst)[i] = inLong(0x1F0);
@@ -88,38 +84,22 @@ void initSeg() {
 	 * 初始化TSS
 	 */
 	//start init idle pcb
-	
-	//tss.esp0 = (uint32_t)pcb[0].stack;
-	//LOG("kernel stack address = %x\n", (uint32_t)pcb[0].stack);
-	//LOG("pcb address = %x\n", (uint32_t)pcb);
 
 	//tss.esp0 = 0x500000; // set kernel esp to 0x500,000
 	//init_kernel_pcb(KSEL(SEG_KDATA), 0x500000);
 	change_tss(pcb[0].tf.ss, (uint32_t)((pcb[0].stack) + MAX_STACK_SIZE - 1));
-	//change_tss(pcb[0].tf.ss,(uint32_t)(&pcb[0].tf) + sizeof(TrapFrame2) );
 
-	//tss.esp0 = pcb[0].tf.esp;
-
-	//tss.ss0 = pcb[0].tf.ss;
 	
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
-
-	//tss.gs = KSEL(SEG_VEDIO);
-	/*uint16_t old_cs = 0,old_ss = 0;
-	uint32_t old_eip = 0, old_esp = 0;
-	uint16_t target_cs = IDT[]*/
 
 	/*设置正确的段寄存器*/
 
 	asm volatile("mov %0,%%eax;" ::"r"((uint32_t)KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%ds;");
 
-	//cs needn`t set
-	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KCODE)));
 	asm volatile("movw %ax,%fs;");
 
-	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%es;");
 	asm volatile("movw %ax,%ss;");
 
@@ -134,11 +114,8 @@ void enterUserSpace_pcb(int32_t pid){
 	asm volatile("mov %0,%%eax;" ::"r"((uint32_t)KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%ds;");
 
-	//cs needn`t set
-	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KCODE)));
 	asm volatile("movw %ax,%fs;");
 
-	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%es;");
 
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.ss));

@@ -7,14 +7,13 @@ int printkernel(char *buf, int len)
     int i = 0;
     for (;i < len && *buf != '\0'; i++,buf++)
     {
-        putChar(*buf);
+        //putChar(*buf);
         display(*buf);
     }
     return 1;
 }
 int display(char x)
 {
-    //asm volatile("int $0x20");
     if (x == '\n')
     {
         system_col = 0;
@@ -39,16 +38,11 @@ int fs_write(int fd, char *buf, int len)
     asm volatile("movw %ax, %gs");
     assert(fd == 1 || fd == 2);
 
-
-
-    //buf += 
     printkernel(buf, len);
     return len;
 }
 void sys_write(TrapFrame *tf)
 {
-    //LOG("length = %d", tf->edx);
-    //assert(0);
     tf->eax = fs_write(tf->ebx, (void *)tf->ecx  + getpid() * PROC_MEMSZ, tf->edx);  // + getpid() * PROC_MEMSZ
 }
 void print_char(int row, int col, char c)

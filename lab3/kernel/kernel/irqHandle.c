@@ -1,7 +1,5 @@
 #include "x86.h"
 #include "device.h"
-//ProcessTable pcb[MAX_PCB_NUM];
-//static char *i2A(int a);
 
 void syscallHandle(TrapFrame *tf);
 void timeHandle(TrapFrame *tf);
@@ -63,7 +61,7 @@ void irqHandle(struct TrapFrame *tf)
 		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
 		
 		//if(0 != GET_CUR_PID){
-			LOG("pid: %d => %d", x, GET_CUR_PID);
+			//LOG("pid: %d => %d", x, GET_CUR_PID);
 			change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
 		//}
 	}
@@ -109,10 +107,27 @@ void GProtectFaultHandle(TrapFrame *tf)
 
 void timeHandle(TrapFrame *tf)
 {
-	putChar('A');
-	pcb[getpid()].timeCount -= 1;
+	//putChar('A');
+	//printk("%d", getpid());
+	pcb[GET_CUR_PID].timeCount -= 1;
 
 	block_decrease();
-	checkTimeCount(tf);
-	putChar('E');
+
+	check_block();
+
+    if (pcb[GET_CUR_PID].timeCount <= 0)
+    {
+        put_into_runnable(GET_CUR_PID, tf);
+
+        int32_t x = get_from_runnable();
+
+        put_into_running(x, tf);
+    }
+	if(0 == getpid()){
+		printk("~");
+	}
+	else{
+		printk("%d", getpid());
+	}
+	//putChar('E');
 }

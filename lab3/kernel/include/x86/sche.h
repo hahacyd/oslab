@@ -72,7 +72,6 @@ void init_pcb();
 int32_t init_kernel_pcb();
 
 int32_t apply_new_pid();
-int32_t checkTimeCount();
 
 int32_t block_decrease();
 int32_t check_is_in(int32_t mode, int32_t pid);

@@ -17,23 +17,6 @@ int32_t put_into_running(int32_t pid, TrapFrame *tf)
     return 1;
 }
 
-int32_t checkTimeCount(TrapFrame *tf)
-{
-#ifdef DEBUG
-    LOG("pid = %d timecount = %d", GET_CUR_PID, pcb[GET_CUR_PID].timeCount);
-#endif
-    check_block();
-
-    if (pcb[GET_CUR_PID].timeCount <= 0)
-    {
-        put_into_runnable(GET_CUR_PID, tf);
-
-        int32_t x = get_from_runnable();
-
-        put_into_running(x, tf);
-    }
-    return 1;
-}
 int32_t apply_new_pid()
 {
     int32_t res = get_from(empty_query, empty_query);
@@ -61,17 +44,8 @@ int32_t get_from_runnable()
 }
 int32_t put_into_runnable(int32_t pid, TrapFrame *tf)
 {
-#ifdef DEBUG
-    LOG("left pid = %d put in pid = %d,", runnable_query, pid);
-#endif
     pcb[pid].tf = *tf;
-
-    if (0 == pid)
-    {
-        pcb[pid].tf.eip = (uint32_t)IDLE;
-    }
     pcb[pid].timeCount = initTimeCount;
-    //pcb[pid].core_esp = (uint32_t)tf;
     pcb[pid].state = RUNNABLE;
 
     return put_into(RUNNABLE, pid);
@@ -173,7 +147,7 @@ int32_t get_from(int32_t mode, int32_t pid)
     }
     int32_t res = mode;
 
-    LOG("res = %d *power = %d", res, *power);
+    //LOG("res = %d *power = %d", res, *power);
     assert(res == *power);
 
     if (-1 == res)
