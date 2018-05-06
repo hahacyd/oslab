@@ -131,7 +131,7 @@ void initSeg() {
 #define SELECTOR(ss) (ss>>3)
 void enterUserSpace_pcb(int32_t pid){
 	ProcessTable *pcbsrc = &GET_PCB(pid);
-	asm volatile("mov %0,%%eax;" ::"r"((uint32_t)USEL(SEG_UDATA)));
+	asm volatile("mov %0,%%eax;" ::"r"((uint32_t)KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%ds;");
 
 	//cs needn`t set
@@ -140,8 +140,6 @@ void enterUserSpace_pcb(int32_t pid){
 
 	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%es;");
-
-
 
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.ss));
 	asm volatile("pushl %0" ::"r"(pcbsrc->tf.esp));		  // %esp 128MB
@@ -158,10 +156,9 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(1).tf.ss = USEL(SEG_UDATA);
 	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
 
-	GET_PCB(1).tf.ds = USEL(SEG_UDATA_STABLE);
-
-	GET_PCB(1).tf.es = USEL(SEG_UDATA_STABLE);
-	GET_PCB(1).tf.fs = USEL(SEG_UDATA_STABLE);
+	GET_PCB(1).tf.ds = USEL(SEG_UDATA);
+	GET_PCB(1).tf.es = USEL(SEG_UDATA);
+	GET_PCB(1).tf.fs = USEL(SEG_UDATA);
 
 	GET_PCB(1).tf.esp = APP_STACK_START;//+PROC_MEMSZ;
 	GET_PCB(1).tf.eip = entry;
@@ -214,5 +211,14 @@ void loadUMain(void) {
 	}
 	//user = (void*)elf->entry;
 	//user();
+	src = 0x200000;
+	dest = 0x200000 + PROC_MEMSZ;
+	for (int i = 0; i < PROC_MEMSZ; i++) {
+        *((uint8_t *)dest + i) = *((uint8_t *)src + i);
+
+		*((uint8_t *)dest + i + PROC_MEMSZ) = *((uint8_t *)src + i);
+
+    }/**/
+
 	enterUserSpace(elf->entry);
 }

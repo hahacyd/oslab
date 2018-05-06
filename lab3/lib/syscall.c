@@ -17,16 +17,16 @@ int32_t syscall(uint32_t eax , uint32_t ebx, uint32_t ecx,
 
 int fork()
 {
-	int32_t res = syscall(__NR_fork, 1, (uint32_t)(char *)&"ni hao a", 13);
+	int32_t res = syscall(__NR_fork, 1, 1, 1);
 	return res;
 }
 int sleep(int32_t time)
 {
-	syscall(__NR_clock_nanosleep, time, 0, 0);
+	syscall(__NR_clock_nanosleep, time, 1, 1);
 	return 0;
 }
 int getpid(){
-	return syscall(__NR_getpid, 1, (uint32_t)(char *)&"ni hao a", 13);
+	return syscall(__NR_getpid, 1, 1, 1);
 }
 int exit()
 {
@@ -34,14 +34,9 @@ int exit()
 	return 0;
 }
 
-void putchar_user(char ch)
-{
-	syscall(4, 1, (int)&ch, 1);
-}
-
 void printd(int a)
 {
-	char buf[31];
+	char buf[101];
 	int count = 0;
 	char *p = buf + sizeof(buf) - 1;
 	uint8_t flag = 0, flag_8 = 0;
@@ -69,7 +64,7 @@ void printd(int a)
 	{
 		buf[29] += 1;
 	} /**/
-	buf[30] = '\0';
+	buf[100] = '\0';
 	prints(p);
 }
 void printx(int n)
@@ -102,7 +97,7 @@ void prints(const char *s)
 		len++;
 	}
 	//int t = getpid();
-	syscall(__NR_write, 1, (uint32_t)s - PROC_MEMSZ, len);
+	syscall(__NR_write, 1, (uint32_t)s, len);
 }
 
 /*void printf(const char *str, ...) {
@@ -133,7 +128,7 @@ void printf(const char *format, ...)
 {
 	uint32_t *ap = (uint32_t *)(void *)&format + 1;
 
-	ap += ((getpid() * PROC_MEMSZ) >> 2); //gdt表中的基地址偏移，给子函数传递正确的参数；
+	//ap += ((getpid() * PROC_MEMSZ) >> 2); //gdt表中的基地址偏移，给子函数传递正确的参数；
 
 	char *c = (void *)format;
 	int32_t d = 0;

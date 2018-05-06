@@ -18,7 +18,6 @@ void irqHandle(struct TrapFrame2 *tf)
     asm volatile("movw %ax, %ds");
     asm volatile("movw %ax, %fs");
     asm volatile("movw %ax, %es");
-	asm volatile("movw %ax, %ss");
 
     asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO)));
     asm volatile("movw %ax, %gs");
@@ -63,10 +62,10 @@ void irqHandle(struct TrapFrame2 *tf)
 		TrapFrame2 *temp = (void *)(*esp);
 		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
 		
-		if(0 != GET_CUR_PID){
+		//if(0 != GET_CUR_PID){
 			LOG("pid: %d => %d", x, GET_CUR_PID);
 			change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
-		}
+		//}
 	}
 
 	enableInterrupt();

@@ -25,6 +25,7 @@ int fork();
 int sleep();
 int exit();
 int getpid();
+
 #define LOG(format, ...)                                                                                   \
     printf("\033[34m");                                                                                    \
     printf("[File:%s, Line:%d,function:%s] > \n" format, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__); \
