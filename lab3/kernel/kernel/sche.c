@@ -133,13 +133,22 @@ int32_t check_block(){
     if(-1 == block_query)
         return -1;
     int32_t pivot = block_query;
+    int32_t tmp = 0;
     do
     {
-        if(pcb[pivot].sleeptime <= 0){
+        if(BLOCKED == pcb[pivot].state && pcb[pivot].sleeptime <= 0){
+            tmp = pcb[pivot].next_pid;
+
             get_from_block(pivot);
 
             put_into_runnable(pivot,&pcb[pivot].tf);
+
+            pivot = pcb[tmp].next_pid;
         }
+        else{
+            pivot = pcb[pivot].next_pid;
+        }
+
     } while (pivot != block_query && block_query != -1);
     return 1;
 }
@@ -169,11 +178,12 @@ int32_t get_from(int32_t mode, int32_t pid)
 {
     if (check_is_in(mode, pid) != 1)
     {
+        LOG("mode = %d pid = %d", mode, pid);
         assert(0);
         //never come here;
         return -1;
     }
-
+ 
     int32_t *power = NULL;
     switch (pcb[pid].state)
     {
@@ -197,19 +207,15 @@ int32_t get_from(int32_t mode, int32_t pid)
     else if (res == pcb[res].next_pid)
     {
         *power = -1;
-        //int32_t res = runnable_query;
     }
     else
     {
-        //int32_t res = runnable_query;
         int32_t pre = pcb[res].pre_pid;
         int32_t next = pcb[res].next_pid;
 
         pcb[pre].next_pid = next;
         pcb[next].pre_pid = pre;
         *power = next;
-        //return res;
-        //pcb[runnable_query].next_pid == pcb[runnable_query].next_pid;
     }
     return res;
 
