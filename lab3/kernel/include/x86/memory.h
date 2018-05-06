@@ -41,11 +41,6 @@ struct GateDescriptor
 	uint32_t offset_31_16     : 16;
 };
 
-struct TrapFrame {
-	uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;
-	int32_t irq;
-};
-
 /*
 1. The number of bits in a bit field sets the limit to the range of values it can hold
 2. Multiple adjacent bit fields are usually packed together (although this behavior is implementation-defined)

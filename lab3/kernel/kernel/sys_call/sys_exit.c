@@ -1,17 +1,12 @@
 #include "x86.h"
 #include "device.h"
 
-int32_t sys_exit(TrapFrame2* tf){
+int32_t sys_exit(TrapFrame* tf){
+    put_into_empty(getpid());
 
-#ifdef DEBUG
-    printk("come to exit\n");
-
-#endif
     int32_t x = get_from_runnable();
 
-    put_into_running(x, (TrapFrame2 *)tf);
+    put_into_running(x, tf);
 
-
-    
     return 1;
 }

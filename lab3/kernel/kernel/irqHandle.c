@@ -1,14 +1,12 @@
 #include "x86.h"
 #include "device.h"
-//ProcessTable pcb[MAX_PCB_NUM];
-//static char *i2A(int a);
 
-void syscallHandle(TrapFrame2 *tf);
-void timeHandle(TrapFrame2 *tf);
-void GProtectFaultHandle(TrapFrame2 *tf);
+void syscallHandle(TrapFrame *tf);
+void timeHandle(TrapFrame *tf);
+void GProtectFaultHandle(TrapFrame *tf);
 //static void print_char(int row, int col, char c);
 extern int32_t current_running_pid;
-void irqHandle(struct TrapFrame2 *tf)
+void irqHandle(struct TrapFrame *tf)
 {
 	/*
 	 * 中断处理程序
@@ -33,7 +31,7 @@ void irqHandle(struct TrapFrame2 *tf)
 	int32_t x = GET_CUR_PID;
 	//asm volatile("movl %0,%%ebp" ::"m"(esp));
 	//asm volatile("movl %0,%%")
-	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
+	//disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
 	switch (tf->irq)
 	{
 	case -1:
@@ -43,6 +41,7 @@ void irqHandle(struct TrapFrame2 *tf)
 		GProtectFaultHandle(tf);
 		break;
 	case 0x80:
+	disableInterrupt();
 		syscallHandle(tf);
 		break;
 	case 0x20:
@@ -59,13 +58,11 @@ void irqHandle(struct TrapFrame2 *tf)
 		//这有一个不好理解的地方是，esp是栈帧后的一个地址，在asmDoIrq里我把add 4 %esp 改成了popl %esp,这样esp会被定位到新进程的内核栈，
 		*esp = (uint32_t)(pcb[GET_CUR_PID].stack + MAX_STACK_SIZE - 1) - 0x3c - 0x10;   //直接定位到内核栈的栈帧部分，
 
-		TrapFrame2 *temp = (void *)(*esp);
+		TrapFrame *temp = (void *)(*esp);
 		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
 		
-		//if(0 != GET_CUR_PID){
-			LOG("pid: %d => %d", x, GET_CUR_PID);
-			change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
-		//}
+		change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
+		change_gdt(USEL(SEG_UCODE), GET_CUR_PID * PROC_MEMSZ);
 	}
 
 	enableInterrupt();
@@ -73,12 +70,9 @@ void irqHandle(struct TrapFrame2 *tf)
 	return;
 }
 
-void syscallHandle(TrapFrame2 *tf)
+void syscallHandle(TrapFrame *tf)
 {
 	/* 实现系统调用*/
-	//asm volatile("int $0x20");
-	//asm volatile("mov %0,%%gs:" ::"a"(6 << 3));
-	//LOG("irq = 0x%x\n",tf->irq);
 	switch (tf->eax)
 	{
 	case __NR_write:
@@ -100,9 +94,8 @@ void syscallHandle(TrapFrame2 *tf)
 		return; /**/
 	}
 	return;
-	//enterUserSpace(1);
 }
-void GProtectFaultHandle(TrapFrame2 *tf)
+void GProtectFaultHandle(TrapFrame *tf)
 {
 	LOG("%d \n", tf->irq);
 	assert(0);
@@ -111,16 +104,29 @@ void GProtectFaultHandle(TrapFrame2 *tf)
 
 #define SELECTOR(ss) (ss >> 3)
 
-void timeHandle(TrapFrame2 *tf)
+void timeHandle(TrapFrame *tf)
 {
-	putChar('A');
-	//GET_PCB(GET_CUR_PID).tf = *(TrapFrame2*)tf;
-	//assert(1 == GET_CUR_PID);
-
-	//LOG("tf->eip = 0x%x", ((TrapFrame2 *)tf)->eip);
-	pcb[getpid()].timeCount -= 1;
+	//putChar('A');
+	//printk("%d", getpid());
+	pcb[GET_CUR_PID].timeCount -= 1;
 
 	block_decrease();
-	checkTimeCount(tf);
-	putChar('E');
+
+	check_block();
+
+    if (pcb[GET_CUR_PID].timeCount <= 0)
+    {
+        put_into_runnable(GET_CUR_PID, tf);
+
+        int32_t x = get_from_runnable();
+
+        put_into_running(x, tf);
+    }
+	if(0 == getpid()){
+		printk("~");
+	}
+	else{
+		printk("%d", getpid());
+	}
+	//putChar('E');
 }
