@@ -130,9 +130,10 @@ void enterUserSpace(uint32_t entry)
 #ifdef DEBUG
 	loaded = 1;
 #endif
+	//对于第一个进程，newpid一定是1，
 	int32_t newpid = apply_new_pid();
 
-	assert(1 == newpid);
+	//assert(1 == newpid);
 
 	GET_PCB(newpid).tf.ss = USEL(SEG_UDATA);
 	GET_PCB(newpid).tf.cs = USEL(SEG_UCODE);
@@ -197,9 +198,7 @@ void loadUMain(void) {
 	dest = 0x200000 + PROC_MEMSZ;
 	for (int i = 0; i < PROC_MEMSZ; i++) {
         *((uint8_t *)dest + i) = *((uint8_t *)src + i);
-
 		//*((uint8_t *)dest + i + PROC_MEMSZ) = *((uint8_t *)src + i);
-
     }/**/
 
 	enterUserSpace(elf->entry);

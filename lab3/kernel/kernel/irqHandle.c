@@ -6,7 +6,7 @@ void timeHandle(TrapFrame *tf);
 void GProtectFaultHandle(TrapFrame *tf);
 //static void print_char(int row, int col, char c);
 extern int32_t current_running_pid;
-void irqHandle(struct TrapFrame *tf)
+void irqHandle(TrapFrame *tf)
 {
 	/*
 	 * 中断处理程序
