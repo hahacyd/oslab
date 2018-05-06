@@ -2,15 +2,13 @@
 #include "device.h"
 
 int32_t sys_fork(TrapFrame2 *tf){
-    printk("this is fork function,haha\n");
-    //int32_t childpid = apply_new_pid();
-
-    int32_t childpid = 2;
+    int32_t childpid = apply_new_pid();
 
     //copy kernel stack
     for (int i = 0; i < MAX_STACK_SIZE;i++){
         pcb[childpid].stack[i] = pcb[getpid()].stack[i];
     }
+
     //copy user stack
     uint32_t src = APP_STACK_START + getpid() * PROC_MEMSZ;
     uint32_t dst = APP_STACK_START + childpid * PROC_MEMSZ;
@@ -21,14 +19,9 @@ int32_t sys_fork(TrapFrame2 *tf){
     GET_PCB(childpid).tf = *(TrapFrame2 *)tf; //GET_PCB(1).tf;
 
     GET_PCB(childpid).tf.eax = 0;
-    //GET_PCB(childpid).tf.esp = APP_STACK_START + childpid * PROC_MEMSZ;
-#ifdef DEBUG
-    //LOG("interupt eip = 0x%x",GET_PCB(childpid).tf.eip);
-    //LOG("interupt cs = 0x%x",GET_PCB(childpid).tf.cs);
-#endif
-    assert(2 == childpid);
 
-    put_into_runnable(childpid,&GET_PCB(childpid).tf);
+    //将子进程放入可运行队列
+    put_into_runnable(childpid,&GET_PCB(childpid).tf); 
 
     return childpid;
 }

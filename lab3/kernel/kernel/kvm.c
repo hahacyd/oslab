@@ -153,19 +153,24 @@ void enterUserSpace(uint32_t entry)
 #ifdef DEBUG
 	loaded = 1;
 #endif
-	GET_PCB(1).tf.ss = USEL(SEG_UDATA);
-	GET_PCB(1).tf.cs = USEL(SEG_UCODE);
+	int32_t newpid = apply_new_pid();
 
-	GET_PCB(1).tf.ds = USEL(SEG_UDATA);
-	GET_PCB(1).tf.es = USEL(SEG_UDATA);
-	GET_PCB(1).tf.fs = USEL(SEG_UDATA);
+	assert(1 == newpid);
 
-	GET_PCB(1).tf.esp = APP_STACK_START;//+PROC_MEMSZ;
-	GET_PCB(1).tf.eip = entry;
-	GET_PCB(1).timeCount = 10;
+	GET_PCB(newpid).tf.ss = USEL(SEG_UDATA);
+	GET_PCB(newpid).tf.cs = USEL(SEG_UCODE);
+
+	GET_PCB(newpid).tf.ds = USEL(SEG_UDATA);
+	GET_PCB(newpid).tf.es = USEL(SEG_UDATA);
+	GET_PCB(newpid).tf.fs = USEL(SEG_UDATA);
+
+	GET_PCB(newpid).tf.esp = APP_STACK_START;//+PROC_MEMSZ;
+	GET_PCB(newpid).tf.eip = entry;
+	GET_PCB(newpid).timeCount = 10;
 
 	
-	put_into_runnable(1,NULL);
+	put_into_runnable(newpid,NULL);
+	
 	enterUserSpace_pcb(0);
 	//GET_PCB(1).state = RUNNING;
 	//enterUserSpace_pcb(1);
