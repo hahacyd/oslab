@@ -31,7 +31,7 @@ void irqHandle(struct TrapFrame *tf)
 	int32_t x = GET_CUR_PID;
 	//asm volatile("movl %0,%%ebp" ::"m"(esp));
 	//asm volatile("movl %0,%%")
-	disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
+	//disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
 	switch (tf->irq)
 	{
 	case -1:
@@ -41,6 +41,7 @@ void irqHandle(struct TrapFrame *tf)
 		GProtectFaultHandle(tf);
 		break;
 	case 0x80:
+	disableInterrupt();
 		syscallHandle(tf);
 		break;
 	case 0x20:
@@ -60,10 +61,8 @@ void irqHandle(struct TrapFrame *tf)
 		TrapFrame *temp = (void *)(*esp);
 		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
 		
-		//if(0 != GET_CUR_PID){
-			//LOG("pid: %d => %d", x, GET_CUR_PID);
-			change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
-		//}
+		change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
+		change_gdt(USEL(SEG_UCODE), GET_CUR_PID * PROC_MEMSZ);
 	}
 
 	enableInterrupt();

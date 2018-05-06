@@ -198,7 +198,7 @@ void loadUMain(void) {
 	for (int i = 0; i < PROC_MEMSZ; i++) {
         *((uint8_t *)dest + i) = *((uint8_t *)src + i);
 
-		*((uint8_t *)dest + i + PROC_MEMSZ) = *((uint8_t *)src + i);
+		//*((uint8_t *)dest + i + PROC_MEMSZ) = *((uint8_t *)src + i);
 
     }/**/
 

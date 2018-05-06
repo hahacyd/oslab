@@ -20,6 +20,13 @@ int32_t sys_fork(TrapFrame *tf){
 
     GET_PCB(childpid).tf.eax = 0;
 
+    //copy user code and data memory
+    src = CODE_BASE + getpid() * PROC_MEMSZ;
+    dst = CODE_BASE + childpid * PROC_MEMSZ;
+    for (int i = 0; i < PROC_MEMSZ;i++){
+        *((uint8_t *)dst + i) = *((uint8_t *)src + i);
+    }
+
     //将子进程放入可运行队列
     put_into_runnable(childpid,&GET_PCB(childpid).tf); 
 
