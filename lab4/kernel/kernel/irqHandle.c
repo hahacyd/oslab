@@ -90,6 +90,8 @@ void syscallHandle(TrapFrame *tf)
 		break;
 	case __NR_getpid:
 		tf->eax = sys_getpid(tf);
+	case __NR_sem_init:
+		tf->eax = sem_init(tf);
 	default:
 		return; /**/
 	}

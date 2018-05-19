@@ -11,6 +11,10 @@
 #define __NR_getpid 7
 #define __NR_clock_nanosleep 230
 
+#define __NR_sem_init 21
+#define __NR_sem_wait 22
+#define __NR_sem_post 23
+#define __NR_sem_destroy 24
 
 
 

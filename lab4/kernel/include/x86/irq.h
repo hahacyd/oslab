@@ -5,4 +5,5 @@
 void initIdt(void);
 void initIntr(void);
 void initTimer();
+uint32_t getKeyCode();
 #endif

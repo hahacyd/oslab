@@ -33,7 +33,20 @@ int exit()
 	syscall(__NR_exit, 0, 0, 0);
 	return 0;
 }
+int sem_init(sem_t *sem, uint32_t value){
+	
+	return syscall(__NR_sem_init, *(uint32_t *)&sem, value, 1);
+}
+int sem_post(sem_t *sem){
+	return syscall(__NR_sem_post, *(uint32_t *)&sem, 1, 1);
+}
 
+int sem_wait(sem_t *sem){
+	return syscall(__NR_sem_wait, 1, 1, 1);
+}
+int sem_destroy(sem_t *sem){
+	return syscall(__NR_sem_destroy, *(uint32_t *)&sem, 1, 1);
+}
 void printd(int a)
 {
 	char buf[101];

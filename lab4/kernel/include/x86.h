@@ -14,6 +14,8 @@
 
 #include "x86/sche.h"
 #include "x86/debug.h"
+
+#include"x86/semaphore.h"
 //void printk(const char *format, ...);
 
 
@@ -27,4 +29,10 @@ int32_t sys_exit(TrapFrame *tf);
 int32_t sys_sleep(TrapFrame * tf);
 int32_t sys_getpid(TrapFrame *tf);
 void sys_write(TrapFrame *tf);
+
+int sem_init(TrapFrame *tf);
+int sem_post(TrapFrame *tf);
+
+int sem_wait(TrapFrame *tf);
+int sem_destroy(TrapFrame *tf);
 #endif
