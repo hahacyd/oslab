@@ -18,7 +18,7 @@
 #include"x86/semaphore.h"
 //void printk(const char *format, ...);
 
-
+#define USER_OFFSET (getpid() * PROC_MEMSZ)
 
 void initSeg(void);
 void loadUMain(void);

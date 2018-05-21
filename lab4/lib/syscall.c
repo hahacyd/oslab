@@ -34,29 +34,22 @@ int exit()
 	return 0;
 }
 int sem_init(sem_t *sem, uint32_t value){
-	printf("%d\n",*sem);
-	printf("%d\n",(uint32_t)sem);
-
 	int x = syscall(__NR_sem_init,(uint32_t)sem, value, 1);
-	//*sem = 24;
-	printf("%d\n", *sem);
-	printf("%d\n", (uint32_t)sem);
-
 	return x;
 }
 int sem_post(sem_t *sem){
 	
-	//return syscall(__NR_sem_post, *(uint32_t *)&sem, 1, 1);
-	return 1;
+	return syscall(__NR_sem_post, (uint32_t)sem, 1, 1);
+	//return 1;
 }
 
 int sem_wait(sem_t *sem){
-	//return syscall(__NR_sem_wait, 1, 1, 1);
-	return 1;
+	return syscall(__NR_sem_wait, 1, 1, 1);
+	//return 1;
 }
 int sem_destroy(sem_t *sem){
-	//return syscall(__NR_sem_destroy, *(uint32_t *)&sem, 1, 1);
-	return 1;
+	return syscall(__NR_sem_destroy, (uint32_t)sem, 1, 1);
+	//return 1;
 }
 void printd(int a)
 {

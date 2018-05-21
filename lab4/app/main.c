@@ -6,10 +6,11 @@ int uEntry(void) {
     int ret = 0;
     int value = 2;
 
-    sem_t sem = 0;  //充当信号量的地址
+    sem_t sem = 88;  //充当信号量的地址
     printf("Father Process: Semaphore Initializing.\n");
     ret = sem_init(&sem, value);
-    exit();
+    //printf("sem = %d\n", sem);
+    //exit();
 
     if (ret == -1) {
         printf("Father Process: Semaphore Initializing Failed.\n");

@@ -142,7 +142,7 @@ void enterUserSpace(uint32_t entry)
 	GET_PCB(newpid).tf.es = USEL(SEG_UDATA);
 	GET_PCB(newpid).tf.fs = USEL(SEG_UDATA);
 
-	GET_PCB(newpid).tf.esp = APP_STACK_START;//+PROC_MEMSZ;
+	GET_PCB(newpid).tf.esp = APP_STACK_START;
 	GET_PCB(newpid).tf.eip = entry;
 	GET_PCB(newpid).timeCount = 10;
 

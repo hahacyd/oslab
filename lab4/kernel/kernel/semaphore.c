@@ -8,31 +8,27 @@ void P(Semaphore *s)
     }
 }
 void V(Semaphore *s){
-    /*s->value += 1;
+    s->value += 1;
     if(s->value <= 0){
         
-    }*/
+    }/**/
 }
 int sys_sem_init(TrapFrame *tf){
-    uint32_t *t = (uint32_t*)tf->ebx;
-    LOG("t = %d\n", (uint32_t)t);
-    *t = 1;
-    //*t = 888;
-    LOG("t = %d\n", *t);
-
-    Sem[1].value = tf->ecx;
-    LOG("value = %d\n", Sem[1].value);
+    uint32_t *t = (void*)tf->ebx + USER_OFFSET;
+    *t = 0;
+    Sem[0].value = tf->ecx;
     return 1;
 }
 int sys_sem_post(TrapFrame *tf){
-    Semaphore *sem = (void *)tf->ebx;
-    P(sem);
+    uint32_t *sem = (void *)tf->ebx;
+
+    P(&Sem[*sem]);
     return 1;
 }
 
 int sys_sem_wait(TrapFrame *tf){
-    Semaphore *sem = (void *)tf->ebx;
-    V(sem);
+    uint32_t *sem = (void *)tf->ebx;
+    V(&Sem[*sem]);
 
     return 1;
 }
