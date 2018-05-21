@@ -6,7 +6,7 @@ typedef struct Semaphore{
     int value;
     ProcessTable *next;
 } Semaphore;
-typedef Semaphore sem_t;
+typedef unsigned int sem_t;
 void P(Semaphore *s);
 void V(Semaphore *s);
 #endif

@@ -1,36 +1,43 @@
 #include"x86.h"
-
-void P(Semaphore *s){
+Semaphore Sem[32];
+void P(Semaphore *s)
+{
     s->value -= 1;
     if(s->value < 0){
         
     }
 }
 void V(Semaphore *s){
-    s->value += 1;
+    /*s->value += 1;
     if(s->value <= 0){
         
-    }
+    }*/
 }
-int sem_init(TrapFrame *tf){
-    Semaphore *sem = (void *)tf->ebx;
-    if(NULL == sem){
-        return -1;
-    }
-    sem->value = tf->ecx;
+int sys_sem_init(TrapFrame *tf){
+    uint32_t *t = (uint32_t*)tf->ebx;
+    LOG("t = %d\n", (uint32_t)t);
+    *t = 1;
+    //*t = 888;
+    LOG("t = %d\n", *t);
+
+    Sem[1].value = tf->ecx;
+    LOG("value = %d\n", Sem[1].value);
     return 1;
 }
-int sem_post(TrapFrame *tf){
+int sys_sem_post(TrapFrame *tf){
     Semaphore *sem = (void *)tf->ebx;
     P(sem);
     return 1;
 }
 
-int sem_wait(TrapFrame *tf){
+int sys_sem_wait(TrapFrame *tf){
     Semaphore *sem = (void *)tf->ebx;
     V(sem);
+
+    return 1;
 }
-int sem_destroy(TrapFrame *tf){
-    Semaphore *sem = (void *)tf->ebx;
-    
+int sys_sem_destroy(TrapFrame *tf){
+    //Semaphore *sem = (void *)tf->ebx;
+
+    return 1;
 }

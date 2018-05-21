@@ -49,7 +49,7 @@ typedef struct ProcessTable
 //
     uint32_t pid;
     uint32_t pre_pid,next_pid;
-    ProcessTable *pre_pcb, *next_pcb;
+    struct ProcessTable *pre_pcb, *next_pcb;
     uint32_t core_esp;
 } ProcessTable;
 //static uint32_t current_num_pid = 0;

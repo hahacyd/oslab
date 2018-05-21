@@ -33,10 +33,7 @@ int sleep();
 int exit();
 int getpid();
 
-typedef struct Semaphore{
-    int value;
-} Semaphore;
-typedef Semaphore sem_t;
+typedef unsigned int sem_t;
 int sem_init(sem_t *sem, uint32_t value);
 int sem_post(sem_t *sem);
 

@@ -30,9 +30,9 @@ int32_t sys_sleep(TrapFrame * tf);
 int32_t sys_getpid(TrapFrame *tf);
 void sys_write(TrapFrame *tf);
 
-int sem_init(TrapFrame *tf);
-int sem_post(TrapFrame *tf);
+int sys_sem_init(TrapFrame *tf);
+int sys_sem_post(TrapFrame *tf);
 
-int sem_wait(TrapFrame *tf);
-int sem_destroy(TrapFrame *tf);
+int sys_sem_wait(TrapFrame *tf);
+int sys_sem_destroy(TrapFrame *tf);
 #endif
