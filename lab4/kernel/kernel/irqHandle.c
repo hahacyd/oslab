@@ -32,6 +32,7 @@ void irqHandle(TrapFrame *tf)
 	//asm volatile("movl %0,%%ebp" ::"m"(esp));
 	//asm volatile("movl %0,%%")
 	//disableInterrupt(); //when cpu is handling interrupt,ignore other interrupt;
+	disableInterrupt();
 	switch (tf->irq)
 	{
 	case -1:
@@ -41,7 +42,6 @@ void irqHandle(TrapFrame *tf)
 		GProtectFaultHandle(tf);
 		break;
 	case 0x80:
-	disableInterrupt();
 		syscallHandle(tf);
 		break;
 	case 0x20:

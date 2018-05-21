@@ -31,7 +31,7 @@ typedef struct TrapFrame
 #define BLOCKED 0
 #define DEAD -1
 #define EMPTY 3
-
+#define PV_ING 4    //当一个进程因pv而阻塞就是这个状态
 #define MAX_STACK_SIZE 2048
 #define MAX_PCB_NUM 2048
 

@@ -34,7 +34,10 @@ int exit()
 	return 0;
 }
 int sem_init(sem_t *sem, uint32_t value){
+	//printf("sem_init:sem = %d\n", *sem);
+
 	int x = syscall(__NR_sem_init,(uint32_t)sem, value, 1);
+	//printf("sem_init:sem = %d\n", *sem);
 	return x;
 }
 int sem_post(sem_t *sem){

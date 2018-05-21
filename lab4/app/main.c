@@ -9,16 +9,16 @@ int uEntry(void) {
     sem_t sem = 88;  //充当信号量的地址
     printf("Father Process: Semaphore Initializing.\n");
     ret = sem_init(&sem, value);
-    //printf("sem = %d\n", sem);
-    //exit();
 
-    if (ret == -1) {
+    //printf("sem = %d\n", sem);
+    if (ret == -1)
+    {
         printf("Father Process: Semaphore Initializing Failed.\n");
         exit();
     }
 
     ret = fork();
-    if (ret == 0) {
+    if (ret == 0) {    //child process
         while( i != 0) {
             i --;
             printf("Child Process: Semaphore Waiting.\n");
@@ -29,7 +29,7 @@ int uEntry(void) {
         sem_destroy(&sem);
         exit();
     }
-    else if (ret != -1) {
+    else if (ret != -1) {   //father process
         while( i != 0) {
             i --;
             printf("Father Process: Sleeping.\n");

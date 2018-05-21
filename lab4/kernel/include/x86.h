@@ -19,7 +19,7 @@
 //void printk(const char *format, ...);
 
 #define USER_OFFSET (getpid() * PROC_MEMSZ)
-
+#define CHANGE_2_USER_ADDR(addr) (addr + getpid() * PROC_MEMSZ)
 void initSeg(void);
 void loadUMain(void);
 void enterUserSpace(uint32_t entry);

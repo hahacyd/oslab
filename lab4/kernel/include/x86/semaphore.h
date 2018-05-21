@@ -4,7 +4,7 @@
 
 typedef struct Semaphore{
     int value;
-    ProcessTable *next;
+    ProcessTable *list;
 } Semaphore;
 typedef unsigned int sem_t;
 void P(Semaphore *s);
