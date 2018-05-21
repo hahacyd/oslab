@@ -13,12 +13,12 @@ void irqHandle(TrapFrame *tf)
 	 */
 	/* Reassign segment register */
 	asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_KDATA)));
-    asm volatile("movw %ax, %ds");
-    asm volatile("movw %ax, %fs");
-    asm volatile("movw %ax, %es");
+	asm volatile("movw %ax, %ds");
+	asm volatile("movw %ax, %fs");
+	asm volatile("movw %ax, %es");
 
-    asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO)));
-    asm volatile("movw %ax, %gs");
+	asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO)));
+	asm volatile("movw %ax, %gs");
 
 	uint32_t ebp = 0;
 	asm volatile("movl %%ebp,%0"
@@ -50,17 +50,17 @@ void irqHandle(TrapFrame *tf)
 
 		break;
 	default:
-		LOG("irq = %d eip = 0x%x", tf->irq,tf->eip);
+		LOG("irq = %d eip = 0x%x", tf->irq, tf->eip);
 		assert(0);
 	}
 	if ((0x80 == tf->irq || 0x20 == tf->irq) && GET_CUR_PID != x) //说明切进程了
-	{	//进入这个函数说明已经切换进程了，且内核栈已经切换了
+	{															  //进入这个函数说明已经切换进程了，且内核栈已经切换了
 		//这有一个不好理解的地方是，esp是栈帧后的一个地址，在asmDoIrq里我把add 4 %esp 改成了popl %esp,这样esp会被定位到新进程的内核栈，
-		*esp = (uint32_t)(pcb[GET_CUR_PID].stack + MAX_STACK_SIZE - 1) - 0x3c - 0x10;   //直接定位到内核栈的栈帧部分，
+		*esp = (uint32_t)(pcb[GET_CUR_PID].stack + MAX_STACK_SIZE - 1) - 0x3c - 0x10; //直接定位到内核栈的栈帧部分，
 
 		TrapFrame *temp = (void *)(*esp);
-		*temp = pcb[GET_CUR_PID].tf;   //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
-		
+		*temp = pcb[GET_CUR_PID].tf; //实际上这个的实际作用是某个进程被第一次加载是把tf的内容复制到内核栈，在以后切换此进程是不需要的，
+
 		change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
 		change_gdt(USEL(SEG_UCODE), GET_CUR_PID * PROC_MEMSZ);
 	}
@@ -76,7 +76,7 @@ void syscallHandle(TrapFrame *tf)
 	switch (tf->eax)
 	{
 	case __NR_write:
-		
+
 		sys_write(tf);
 		break;
 	case __NR_clock_nanosleep:
@@ -90,14 +90,23 @@ void syscallHandle(TrapFrame *tf)
 		break;
 	case __NR_getpid:
 		tf->eax = sys_getpid(tf);
+		break;
 	case __NR_sem_init:
 		tf->eax = sys_sem_init(tf);
+		break;
+
 	case __NR_sem_post:
 		tf->eax = sys_sem_post(tf);
+		break;
+
 	case __NR_sem_wait:
 		tf->eax = sys_sem_wait(tf);
+		break;
+
 	case __NR_sem_destroy:
 		tf->eax = sys_sem_destroy(tf);
+		break;
+
 	default:
 		return; /**/
 	}
@@ -122,18 +131,22 @@ void timeHandle(TrapFrame *tf)
 
 	check_block();
 
-    if (pcb[GET_CUR_PID].timeCount <= 0)
-    {
-        put_into_runnable(GET_CUR_PID, tf);
+	if (pcb[GET_CUR_PID].timeCount <= 0)
+	{
+		put_into_runnable(GET_CUR_PID, tf);
 
-        int32_t x = get_from_runnable();
-
-        put_into_running(x, tf);
-    }
-	if(0 == getpid()){
+		int32_t x = get_from_runnable();
+		//#ifdef DEBUG
+		//LOG("\n==> %d\n", x);
+		//#endif
+		put_into_running(x, tf);
+	}
+	if (0 == getpid())
+	{
 		printk("~");
 	}
-	else{
+	else
+	{
 		printk("%d", getpid());
 	}
 	//putChar('E');

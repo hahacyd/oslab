@@ -8,8 +8,8 @@ void W(Semaphore *s)
     s->list = &pcb[getpid()];
 
     int pid = get_from_runnable();
-    LOG("blocked pid = %d\n", s->list->pid);
-    assert(2 == s->list->pid);
+    //LOG("blocked pid = %d\n", s->list->pid);
+    assert(2 == getpid());
     put_into_running(pid, NULL);
 }
 //used to release a process!
@@ -20,12 +20,12 @@ void R(Semaphore *s)
 
     put_into_runnable(pid, &pcb[pid].tf);
     assert(1 == getpid());
-    LOG("release pid = %d\n", s->list->pid);
+    //LOG("release pid = %d\n",pid);
 }
 void P(Semaphore *s)
 {
     s->value -= 1;
-    LOG("s->value = %d\n", s->value);
+    //LOG("s->value = %d\n", s->value);
     if (s->value < 0)
     {
         W(s);
@@ -34,10 +34,12 @@ void P(Semaphore *s)
 void V(Semaphore *s)
 {
     s->value += 1;
+    //LOG("s->value = %d\n", s->value);
+
     if (s->value <= 0)
     {
         R(s);
-    } /**/
+    }
 }
 int sys_sem_init(TrapFrame *tf)
 {
@@ -50,16 +52,17 @@ int sys_sem_init(TrapFrame *tf)
 int sys_sem_post(TrapFrame *tf)   //father process!
 {
     uint32_t *sem = (void *)CHANGE_2_USER_ADDR(tf->ebx);
-    LOG("*sem = %d\n", *sem);
+    //LOG("pid = %d *sem = %d\n",getpid(), *sem);
 
     V(&Sem[*sem]);
+    //LOG("end\n");
     return 1;
 }
 
 int sys_sem_wait(TrapFrame *tf)   //child process!
 {
     uint32_t *sem = (void *)CHANGE_2_USER_ADDR(tf->ebx);
-    LOG("*sem = %d\n", *sem);
+    //LOG("*sem = %d\n", *sem);
     P(&Sem[*sem]);
     return 1;
 }
