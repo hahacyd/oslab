@@ -58,7 +58,6 @@ int sys_sem_post(TrapFrame *tf)   //father process!
     //LOG("end\n");
     return 1;
 }
-
 int sys_sem_wait(TrapFrame *tf)   //child process!
 {
     uint32_t *sem = (void *)CHANGE_2_USER_ADDR(tf->ebx);
