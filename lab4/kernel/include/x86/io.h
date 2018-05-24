@@ -50,4 +50,6 @@ static inline void outByte(uint16_t port, int8_t data) {
 	asm volatile("out %%al, %%dx" : : "a"(data), "d"(port));
 }
 
+uint32_t getKeyCode();
+
 #endif

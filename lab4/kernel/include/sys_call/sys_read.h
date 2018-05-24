@@ -1,0 +1,1 @@
+char scancode[256];

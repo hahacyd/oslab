@@ -106,7 +106,9 @@ void syscallHandle(TrapFrame *tf)
 	case __NR_sem_destroy:
 		tf->eax = sys_sem_destroy(tf);
 		break;
-
+	case __NR_read:
+		tf->eax = sys_read(tf);
+		break;
 	default:
 		return; /**/
 	}

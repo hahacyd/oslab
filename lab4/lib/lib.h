@@ -1,6 +1,9 @@
 #ifndef __lib_h__
 #define __lib_h__
 #include"types.h"
+#define stdin 0
+#define stdout 1
+#define stderr 2
 
 #define __NR_exit 1
 #define __NR_fork 2
@@ -27,6 +30,8 @@ void printd(int a);
 void printc(char c);
 void prints(const char *s);
 void printx(int n);
+
+char* gets(char* buffer);
 
 int fork();
 int sleep();

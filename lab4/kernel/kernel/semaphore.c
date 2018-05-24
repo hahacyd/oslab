@@ -1,6 +1,8 @@
 #include "x86.h"
-Semaphore Sem[32];
+#define SEM_NUM 32
+Semaphore Sem[SEM_NUM];
 //used to blocked a process;
+static int sem_index = 0;
 void W(Semaphore *s)
 {
     pcb[getpid()].next_pcb = s->list;
@@ -44,10 +46,13 @@ void V(Semaphore *s)
 int sys_sem_init(TrapFrame *tf)
 {
     uint32_t *t = (void *)CHANGE_2_USER_ADDR(tf->ebx);
-    *t = 0;
-    Sem[0].value = tf->ecx;
-    Sem[0].list = NULL;
-    return 0;
+
+    *t = sem_index % SEM_NUM;   //保证了最多支持32个信号量变量,
+    Sem[*t].value = tf->ecx;
+    Sem[*t].list = NULL;
+
+    sem_index += 1;
+    return 1;
 }
 int sys_sem_post(TrapFrame *tf)   //father process!
 {

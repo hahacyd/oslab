@@ -179,3 +179,6 @@ void printf(const char *format, ...)
 			printc(*c);
 	}
 }
+char* gets(char* buffer){
+	return (char*)syscall(__NR_read, stdin, (uint32_t)buffer, 1);
+}

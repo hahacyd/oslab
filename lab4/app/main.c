@@ -2,6 +2,12 @@
 #include "types.h"
 
 int uEntry(void) {
+    //while(1){
+    char buffer[2048];
+    gets(buffer);
+    printf("%s\n", buffer);
+    exit();
+
     int i = 4;
     int ret = 0;
     int value = 2;
