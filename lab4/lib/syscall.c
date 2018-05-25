@@ -180,5 +180,10 @@ void printf(const char *format, ...)
 	}
 }
 char* gets(char* buffer){
-	return (char*)syscall(__NR_read, stdin, (uint32_t)buffer, 1);
+	return (char*)syscall(__NR_read, stdin, (uint32_t)buffer, 2048);
+}
+char getchar(){
+	char bufferTemp[5];
+	syscall(__NR_read, stdin, (uint32_t)bufferTemp, 1);
+	return bufferTemp[0];
 }

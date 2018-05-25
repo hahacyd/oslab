@@ -32,6 +32,7 @@ void prints(const char *s);
 void printx(int n);
 
 char* gets(char* buffer);
+char getchar();
 
 int fork();
 int sleep();

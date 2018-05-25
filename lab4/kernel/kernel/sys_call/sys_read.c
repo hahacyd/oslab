@@ -17,7 +17,8 @@ char scancode[256] = {
     "        "
     /* 0x40 ~ 0x4f */
     "        "
-    "++++++++"}; //'7', '8', '9', '0', '-', '=', 0xe, 0xf};
+    //"++++++++"
+}; //'7', '8', '9', '0', '-', '=', 0xe, 0xf};
 unsigned char getScancode()
 {
     while (!(inByte(0x64) & 1))
@@ -32,9 +33,10 @@ uint32_t sys_read(TrapFrame *tf)
     uint32_t x = 0;
     char c;
     char *userBuffer = (void *)CHANGE_2_USER_ADDR(tf->ecx);
+    int length = tf->edx;
     int stepCounter = 0;
 
-    while (c != '\n')
+    while(stepCounter < length && c != '\n')
     {
         x = getScancode();
         if(0x3a == x){  //检查caps Lock
@@ -68,19 +70,36 @@ uint32_t sys_read(TrapFrame *tf)
             else if(c >= 44 && c <= 47){
                 c += 16;
             }
+            else{
+                char t;
+                switch (x)
+                {
+                case 0x27:
+                    t = ':';
+                    break;
+                case 0x28:
+                    t = '"';
+                    break;
+                case 0x29:
+                    t = '~';
+                    break;
+                default:
+                    LOG("%d\n", x);
+                    assert(0);
+                    }
+                    c = t;
+            }
             //shiftPress = 0;
         }
         if(1 == capsLock  && c >= 97 && c <= 122){
             if(0 == shiftPress){
                 c -= 32;
             }
-            else{
-                //c += 32;
-            }
         }
         LOG("%c", c);
         userBuffer[stepCounter] = c;
         stepCounter += 1;
+
         printkernel(&c, 1);
     }
     userBuffer[stepCounter - 1] = '\0';

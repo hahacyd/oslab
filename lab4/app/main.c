@@ -3,9 +3,12 @@
 
 int uEntry(void) {
     //while(1){
-    char buffer[2048];
-    gets(buffer);
-    printf("%s\n", buffer);
+    //char buffer[2048];
+    //gets(buffer);
+    //printf("%s\n", buffer);
+    char c;
+    c = getchar();
+    printc(c);
     exit();
 
     int i = 4;
