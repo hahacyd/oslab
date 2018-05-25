@@ -3,12 +3,19 @@
 
 int uEntry(void) {
     //while(1){
-    //char buffer[2048];
+    char buffer[2048];
+    //int x = 0;
+    while(-1 != scanf(" %s ", buffer)){
+        //printd(x);
+        printf("%c\n", buffer[0]);
+    }
+    printf("failed\n");
+    //printd(x);
     //gets(buffer);
+    //scanf
+    //printf("%x\n", -0x1fab);
+    //printf("result = %x\n", scanfx(buffer));
     //printf("%s\n", buffer);
-    char c;
-    c = getchar();
-    printc(c);
     exit();
 
     int i = 4;

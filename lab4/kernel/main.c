@@ -4,6 +4,7 @@
 
 
 void kEntry(void) {
+	update_cursor(0, 0);
 
 	initTimer();
 	init_pcb();
@@ -17,7 +18,6 @@ void kEntry(void) {
 /* start time interrupt */
 
 	enableInterrupt();
-
 	loadUMain(); // load user program, enter user space
 
 	while(1);

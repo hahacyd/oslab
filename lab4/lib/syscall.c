@@ -6,11 +6,13 @@
  * 库函数写在这
  */
 int length_str(char *str);
-int32_t syscall(uint32_t eax , uint32_t ebx, uint32_t ecx,
+int32_t syscall(uint32_t eax, uint32_t ebx, uint32_t ecx,
 				uint32_t edx)
 {
 	int32_t ret = 0;
-	asm volatile("int $0x80":"=r"(ret):"a"(eax),"b"(ebx),"c"(ecx),"d"(edx));
+	asm volatile("int $0x80"
+				 : "=r"(ret)
+				 : "a"(eax), "b"(ebx), "c"(ecx), "d"(edx));
 
 	return ret;
 }
@@ -25,7 +27,8 @@ int sleep(int32_t time)
 	syscall(__NR_clock_nanosleep, time, 1, 1);
 	return 0;
 }
-int getpid(){
+int getpid()
+{
 	return syscall(__NR_getpid, 1, 1, 1);
 }
 int exit()
@@ -33,24 +36,28 @@ int exit()
 	syscall(__NR_exit, 0, 0, 0);
 	return 0;
 }
-int sem_init(sem_t *sem, uint32_t value){
+int sem_init(sem_t *sem, uint32_t value)
+{
 	//printf("sem_init:sem = %d\n", *sem);
 
-	int x = syscall(__NR_sem_init,(uint32_t)sem, value, 1);
+	int x = syscall(__NR_sem_init, (uint32_t)sem, value, 1);
 	//printf("sem_init:sem = %d\n", *sem);
 	return x;
 }
-int sem_post(sem_t *sem){
-	
+int sem_post(sem_t *sem)
+{
+
 	return syscall(__NR_sem_post, (uint32_t)sem, 1, 1);
 	//return 1;
 }
 
-int sem_wait(sem_t *sem){
+int sem_wait(sem_t *sem)
+{
 	return syscall(__NR_sem_wait, 1, 1, 1);
 	//return 1;
 }
-int sem_destroy(sem_t *sem){
+int sem_destroy(sem_t *sem)
+{
 	return syscall(__NR_sem_destroy, (uint32_t)sem, 1, 1);
 	//return 1;
 }
@@ -59,7 +66,7 @@ void printd(int a)
 	char buf[101];
 	int count = 0;
 	char *p = buf + sizeof(buf) - 1;
-	uint8_t flag = 0, flag_8 = 0;
+	uint8_t negetiveFlag = 0, flag_8 = 0;
 	if (a < 0)
 	{
 		if (0x80000000 == a)
@@ -67,7 +74,7 @@ void printd(int a)
 			a++;
 			flag_8 = 1;
 		}
-		flag = 1; //if a < 0;flag = 1;
+		negetiveFlag = 1; //if a < 0;flag = 1;
 		a = -a;
 	}
 	do
@@ -75,7 +82,7 @@ void printd(int a)
 		*--p = '0' + a % 10;
 		count++;
 	} while (a /= 10);
-	if (1 == flag)
+	if (1 == negetiveFlag)
 	{
 		*--p = '-';
 		count++;
@@ -89,18 +96,27 @@ void printd(int a)
 }
 void printx(int n)
 {
-
+	int negetiveFlag = 0;
+	if (n < 0)
+	{
+		negetiveFlag = 1;
+		n = -n;
+	}
 	char buf[31];
 	char *p = buf + sizeof(buf) - 1;
 	int i = 0;
 	do
 	{
 		i = n % 16;
-		if(i >= 10)
+		if (i >= 10)
 			*(--p) = 'a' + i - 10;
 		else
 			*(--p) = '0' + i;
 	} while (n /= 16);
+	if (1 == negetiveFlag)
+	{
+		*(--p) = '-';
+	}
 	buf[30] = '\0';
 	prints(p);
 }
@@ -169,21 +185,140 @@ void printf(const char *format, ...)
 				prints((char *)(*ap++));
 				break;
 			case 'c':
-				printc((char )*ap++);
+				printc((char)*ap++);
 				break;
 			default:
 				break;
 			}
 		}
-		else 
+		else
 			printc(*c);
 	}
 }
-char* gets(char* buffer){
-	return (char*)syscall(__NR_read, stdin, (uint32_t)buffer, 2048);
+int gets(char *buffer)
+{
+	return syscall(__NR_read, stdin, (uint32_t)buffer, 2048);
 }
-char getchar(){
+char getchar()
+{
 	char bufferTemp[5];
 	syscall(__NR_read, stdin, (uint32_t)bufferTemp, 1);
 	return bufferTemp[0];
+}
+int scanfd(char *buf, int *res)
+{
+	int result = 0;
+	int negetiveFlag = 0;
+	int stepCounter = 0;
+	if ('-' == *buf)
+	{
+		negetiveFlag = 1;
+		buf += 1;
+		stepCounter++;
+	}
+	while (' ' != *buf && '\0' != *buf)
+	{
+		result *= 10;
+		result += *buf - '0';
+		buf += 1;
+		stepCounter++;
+
+		//printf("x");
+	}
+	*res = (1 == negetiveFlag) ? (0 - result) : result;
+	return stepCounter;
+}
+int scanfx(char *buf, int *res)
+{
+	int result = 0;
+	int negetiveFlag = 0;
+	int stepCounter = 0;
+	if ('-' == *buf)
+	{
+		negetiveFlag = 1;
+		buf += 1;
+		stepCounter++;
+	}
+	while (' ' != *buf && '\0' != *buf)
+	{
+		result *= 16;
+
+		if (*buf <= 'f' && *buf >= 'a')
+		{
+			result += *buf - 'a' + 10;
+		}
+		else if (*buf <= '9' && *buf >= '0')
+		{
+			result += *buf - '0';
+		}
+		buf += 1;
+		stepCounter++;
+		//printf("x");
+	}
+	if (1 == negetiveFlag)
+	{
+		result = 0 - result;
+	}
+	*res = result;
+	return stepCounter;
+}
+int scanfs(char *buf, char *dst)
+{
+	int count = 0;
+	while (*buf != ' ' && *buf != '\0')
+	{
+		*(dst++) = *(buf++);
+		count++;
+	}
+	return count;
+}
+int scanfc(char *buf,char *c)
+{
+	*c = *buf;
+	return 1;
+}
+int scanf(const char *format, ...)
+{
+	char buffer[2048];
+	gets(buffer); //获得了一个输入字符串；
+
+	uint32_t *ap = (uint32_t *)(void *)&format + 1;
+
+	char *c = (void *)format;
+	int stepCounter = 0;
+
+	//int32_t t = 0;
+	int bufLen = 0;
+	for (; c[stepCounter] != '\0'; stepCounter++)
+	{
+		if ('%' == c[stepCounter])
+		{
+			switch (c[++stepCounter])
+			{
+			case 'd':
+				bufLen += scanfd(buffer + bufLen, (void*)(*(ap++)));
+				break;
+			case 'x':
+				bufLen += scanfx(buffer + bufLen, (void*)(*(ap++)));
+				break;
+			case 's':
+				bufLen += scanfs(buffer + bufLen, (void *)(*(ap++)));
+				break;
+			case 'c':
+				bufLen += scanfc(buffer + bufLen, (void *)(*(ap++)));
+				//printc((char)*ap++);
+				break;
+			default:
+				break;
+			}
+		}
+		else if(c[stepCounter] != buffer[bufLen]){
+			return -1;
+		}
+		else{
+			bufLen++;
+		}
+	}
+
+	return 1;
 }

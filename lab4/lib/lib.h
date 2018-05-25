@@ -31,8 +31,13 @@ void printc(char c);
 void prints(const char *s);
 void printx(int n);
 
-char* gets(char* buffer);
+int gets(char* buffer);
 char getchar();
+int scanfd(char *buf,int* res);
+int scanfx(char *buf,int* res);
+int scanfc(char *buf, char *c);
+int scanf(const char *format, ...);
+
 
 int fork();
 int sleep();

@@ -1,8 +1,25 @@
 #include "x86.h"
 #include "device.h"
-static int system_row = 0,    //目前显存的位置；
-           system_col = 0,
-           pageuprow = 20;   //当行数大于 pageuprow 时将会 向上滚动一行，
+static int system_row = 0, //目前显存的位置；
+    system_col = 0,
+           pageuprow = 20; //当行数大于 pageuprow 时将会 向上滚动一行，
+int backSpace()
+{
+    if (0 == system_col)
+    {
+        system_row--;
+        system_col = COL_SIZE;
+        print_char(system_row, system_col, ' ');
+    }
+    else
+    {
+        system_col--;
+        print_char(system_row, system_col, ' ');
+    }
+
+    update_cursor(system_row, system_col);
+    return 1;
+}
 int printkernel(char *buf, int len)
 {
     int i = 0;
@@ -26,7 +43,6 @@ int printkernel(char *buf, int len)
             print_char(system_row, system_col, x);
             system_col += 1;
             update_cursor(system_row, system_col);
-
         }
         if (COL_SIZE == system_col)
         {
@@ -62,7 +78,8 @@ void scrollScreen()
         for (int i = 0; i <= COL_SIZE; i++)
         {
             //处理最后一行时只复制到光标的纵坐标，
-            if(row == system_row && i >= system_col){
+            if (row == system_row && i >= system_col)
+            {
                 break;
             }
             //读取显存内容

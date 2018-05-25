@@ -1,7 +1,7 @@
 #include "x86.h"
 #include "device.h"
 //每个按键的释放 是扫描码 + 0x80;
-
+char inputBuffer[2048];
 char scancode[256] = {
     /* 0x0 ~ 0xf */
     "\n\n123456"
@@ -56,8 +56,11 @@ uint32_t sys_read(TrapFrame *tf)
         {
             continue;
         }
-
         c = scancode[x];
+        if('\b' == c){
+            backSpace();
+            continue;
+        }
         //char t;
         if (1 == shiftPress)
         {
@@ -98,11 +101,13 @@ uint32_t sys_read(TrapFrame *tf)
         }
         LOG("%c", c);
         userBuffer[stepCounter] = c;
+        inputBuffer[stepCounter] = c;
+        
         stepCounter += 1;
 
         printkernel(&c, 1);
     }
     userBuffer[stepCounter - 1] = '\0';
 
-    return CHANGE_2_USER_ADDR(tf->ecx);
+    return stepCounter;
 }

@@ -9,4 +9,5 @@ void print_char(int row, int col, char c);
 
 void update_cursor(int r, int c);
 void scrollScreen();
+int backSpace();
 #endif
