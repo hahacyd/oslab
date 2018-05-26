@@ -21,8 +21,8 @@ typedef struct TrapFrame
 {
     uint32_t gs, fs, es, ds;
     uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;
-    int32_t irq;    //interrupt no
-	uint32_t error_code, eip, cs, eflags;
+    int32_t irq,error_code;    //interrupt no
+	uint32_t eip, cs, eflags;
     uint32_t esp, ss; // exists only when CPL changes
 } TrapFrame;
 //below defines is for Process state

@@ -99,15 +99,17 @@ uint32_t sys_read(TrapFrame *tf)
                 c -= 32;
             }
         }
-        LOG("%c", c);
-        userBuffer[stepCounter] = c;
+        //LOG("%c", c);
+        //userBuffer[stepCounter] = c;
         inputBuffer[stepCounter] = c;
         
         stepCounter += 1;
 
         printkernel(&c, 1);
     }
-    userBuffer[stepCounter - 1] = '\0';
-
+    inputBuffer[stepCounter - 1] = '\0';
+    for (int i = 0; i < stepCounter;i++){
+        userBuffer[i] = inputBuffer[i];
+    }
     return stepCounter;
 }

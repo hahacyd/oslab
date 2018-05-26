@@ -3,12 +3,26 @@
 
 int uEntry(void) {
     //while(1){
+    /*for (int i = 0; i < 10000;i++){
+        printf("hello :%d?", i);
+        sleep(1);
+    }*/
+    /*int a = 0;
+    while (1)
+    {
+        a = (0 == a) ? 1 : 0;
+        sleep(1);
+    }*/
     char buffer[2048];
     //int x = 0;
-    while(-1 != scanf(" %s ", buffer)){
+    int x = 1;
+    while (x)
+    {
         //printd(x);
-        printf("%c\n", buffer[0]);
+        x = scanf("%s", buffer);
+        printf("%s\n", buffer);
     }
+
     printf("failed\n");
     //printd(x);
     //gets(buffer);
