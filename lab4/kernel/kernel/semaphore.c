@@ -1,9 +1,10 @@
 #include "x86.h"
 #define SEM_NUM 32
 Semaphore Sem[SEM_NUM];
-//used to blocked a process;
 static int sem_index = 0;
-void W(Semaphore *s)
+//used to blocked a process;
+
+void W(Semaphore *s) 
 {
     pcb[getpid()].next_pcb = s->list;
 
@@ -73,8 +74,8 @@ int sys_sem_wait(TrapFrame *tf)   //child process!
 int sys_sem_destroy(TrapFrame *tf)
 {
     //Semaphore *sem = (void *)tf->ebx;
-   // uint32_t *t = (void *)CHANGE_2_USER_ADDR(tf->ebx);
-    //*t = -1;
-   // Sem[0].value = -1;
+    uint32_t *t = (void *)CHANGE_2_USER_ADDR(tf->ebx);
+    *t = -1;
+    Sem[0].value = -1;
     return 1;
 }

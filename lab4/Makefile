@@ -13,7 +13,11 @@ play: os.img
 
 debug: os.img
 	$(QEMU) -serial stdio -s -S os.img
+submit:
+	@cd ../relative;mkdir lab;mkdir report;cp lab4实验报告.pdf report;
+	cp -r . ../relative/lab/
 
+	@cd ../relative;zip -r lab4-161220019.zip lab report
 clean:
 	@cd bootloader; make clean
 	@cd kernel; make clean

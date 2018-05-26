@@ -49,7 +49,7 @@ int32_t put_into_runnable(int32_t pid, TrapFrame *tf)
     pcb[pid].state = RUNNABLE;
 
     //if(1 == GET_CUR_PID){
-        LOG("pid = %d eip = %x",GET_CUR_PID, tf->eip);
+        //LOG("pid = %d eip = %x",GET_CUR_PID, tf->eip);
     //}
     return put_into(RUNNABLE, pid);
 }

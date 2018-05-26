@@ -2,45 +2,14 @@
 #include "types.h"
 
 int uEntry(void) {
-    //while(1){
-    /*for (int i = 0; i < 10000;i++){
-        printf("hello :%d?", i);
-        sleep(1);
-    }*/
-    /*int a = 0;
-    while (1)
-    {
-        a = (0 == a) ? 1 : 0;
-        sleep(1);
-    }*/
-    char buffer[2048];
-    //int x = 0;
-    int x = 1;
-    while (x)
-    {
-        //printd(x);
-        x = scanf("%s", buffer);
-        printf("%s\n", buffer);
-    }
-
-    printf("failed\n");
-    //printd(x);
-    //gets(buffer);
-    //scanf
-    //printf("%x\n", -0x1fab);
-    //printf("result = %x\n", scanfx(buffer));
-    //printf("%s\n", buffer);
-    exit();
-
     int i = 4;
     int ret = 0;
     int value = 2;
 
-    sem_t sem = 88;  //充当信号量的地址
+    sem_t sem = 0;  //充当信号量的地址
     printf("Father Process: Semaphore Initializing.\n");
     ret = sem_init(&sem, value);
 
-    //printf("sem = %d\n", sem);
     if (ret == -1)
     {
         printf("Father Process: Semaphore Initializing Failed.\n");
