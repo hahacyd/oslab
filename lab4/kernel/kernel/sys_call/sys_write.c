@@ -101,7 +101,7 @@ void scrollScreen()
     }
     system_row -= 1;
 }
-void sys_write(TrapFrame *tf)
+int32_t sys_write(TrapFrame *tf)
 {
     asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO))
                  : "eax");
@@ -109,6 +109,7 @@ void sys_write(TrapFrame *tf)
     assert(tf->ebx == 1 || tf->ebx == 2);
 
     printkernel((void *)tf->ecx + getpid() * PROC_MEMSZ, tf->edx);
+    return 1;
 }
 void print_char(int row, int col, char c)
 {

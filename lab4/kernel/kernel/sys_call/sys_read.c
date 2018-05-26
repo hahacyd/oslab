@@ -28,7 +28,7 @@ unsigned char getScancode()
 int capsLock = 0;
 int shiftPress = 0;
 char shiftFunct[22] = "~!@#$%^&*()_+";
-uint32_t sys_read(TrapFrame *tf)
+int32_t sys_read(TrapFrame *tf)
 {
     uint32_t x = 0;
     char c;

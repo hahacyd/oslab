@@ -6,7 +6,14 @@ void timeHandle(TrapFrame *tf);
 void GProtectFaultHandle(TrapFrame *tf);
 //static void print_char(int row, int col, char c);
 extern int32_t current_running_pid;
-//void(*int32_t) sys_call_handle(TrapFrame *)[45];
+int32_t (*sys_call_handle[145])(TrapFrame *);
+int32_t add_sys_handler(int index, int32_t (*hander)(TrapFrame *))
+{
+	//if(NULL == sys_call_handle[index]){
+	sys_call_handle[index] = hander;
+	//}
+	return 1;
+}
 void irqHandle(TrapFrame *tf)
 {
 	/*
@@ -17,6 +24,9 @@ void irqHandle(TrapFrame *tf)
 	asm volatile("movw %ax, %ds");
 	asm volatile("movw %ax, %fs");
 	asm volatile("movw %ax, %es");
+
+	//asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_KCODE)));
+	//asm volatile("movw %ax, %cs");
 
 	asm volatile("movl %0, %%eax" ::"r"(KSEL(SEG_VIDEO)));
 	asm volatile("movw %ax, %gs");
@@ -66,64 +76,25 @@ void irqHandle(TrapFrame *tf)
 		change_gdt(USEL(SEG_UDATA), GET_CUR_PID * PROC_MEMSZ);
 		change_gdt(USEL(SEG_UCODE), GET_CUR_PID * PROC_MEMSZ);
 
-		if (1 == GET_CUR_PID)
+		if (1 <= GET_CUR_PID)
 		{
-			LOG("eip = %x\n", pcb[1].tf.eip);
+			//LOG("eip = %x\n", pcb[1].tf.eip);
 			assert(0x200000 <= tf->eip);
 		}
 	}
-	if (1 == GET_CUR_PID)
-	{
-		//LOG("pid = %d eip = %x",GET_CUR_PID , tf->eip);
-	}
-
-	
+	//assert(pcb[0].tf.cs == SEG_KCODE);
 	enableInterrupt();
 	return;
 }
 
 void syscallHandle(TrapFrame *tf)
 {
-	/* 实现系统调用*/
-	switch (tf->eax)
-	{
-	case __NR_write:
-
-		sys_write(tf);
-		break;
-	case __NR_clock_nanosleep:
-		sys_sleep(tf);
-		break;
-	case __NR_exit:
-		sys_exit(tf);
-		break;
-	case __NR_fork:
-		tf->eax = sys_fork(tf);
-		break;
-	case __NR_getpid:
-		tf->eax = sys_getpid(tf);
-		break;
-	case __NR_sem_init:
-		tf->eax = sys_sem_init(tf);
-		break;
-
-	case __NR_sem_post:
-		tf->eax = sys_sem_post(tf);
-		break;
-
-	case __NR_sem_wait:
-		tf->eax = sys_sem_wait(tf);
-		break;
-
-	case __NR_sem_destroy:
-		tf->eax = sys_sem_destroy(tf);
-		break;
-	case __NR_read:
-		tf->eax = sys_read(tf);
-		break;
-	default:
-		return; /**/
-	}
+	/* 
+	* sys_call_handle是函数指针数组，tf->eax作为索引可以
+	* 快速的获得对应的,处理函数，加快处理速度；
+	* 当然是通过add_sys_handler来提前注册好处理函数了
+	*/
+	tf->eax = sys_call_handle[tf->eax](tf);
 	return;
 }
 void GProtectFaultHandle(TrapFrame *tf)
@@ -164,4 +135,19 @@ void timeHandle(TrapFrame *tf)
 		printk("%d", getpid());
 	}
 	//putChar('E');
+}
+void initSyscallHander()
+{
+	add_sys_handler(__NR_exit, sys_exit);
+	add_sys_handler(__NR_fork, sys_fork);
+	add_sys_handler(__NR_read, sys_read);
+	add_sys_handler(__NR_write, sys_write);
+
+	add_sys_handler(__NR_getpid, sys_getpid);
+	add_sys_handler(__NR_clock_nanosleep, sys_sleep);
+
+	add_sys_handler(__NR_sem_init, sys_sem_init);
+	add_sys_handler(__NR_sem_wait, sys_sem_wait);
+	add_sys_handler(__NR_sem_post, sys_sem_post);
+	add_sys_handler(__NR_sem_destroy, sys_sem_destroy);
 }

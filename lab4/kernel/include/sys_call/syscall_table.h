@@ -9,7 +9,7 @@
 #define __NR_open 5
 #define __NR_close 6
 #define __NR_getpid 7
-#define __NR_clock_nanosleep 230
+#define __NR_clock_nanosleep 8
 
 #define __NR_sem_init 21
 #define __NR_sem_wait 22

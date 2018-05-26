@@ -5,7 +5,8 @@
 
 void kEntry(void) {
 	update_cursor(0, 0);
-
+	initSyscallHander();
+	
 	initTimer();
 	init_pcb();
 	init_kernel_pcb();

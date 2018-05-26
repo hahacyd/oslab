@@ -22,14 +22,15 @@
 #define CHANGE_2_USER_ADDR(addr) (addr + getpid() * PROC_MEMSZ)
 void initSeg(void);
 void loadUMain(void);
+void initSyscallHander();
 void enterUserSpace(uint32_t entry);
 
 int32_t sys_fork(TrapFrame *tf);
 int32_t sys_exit(TrapFrame *tf);
 int32_t sys_sleep(TrapFrame * tf);
 int32_t sys_getpid(TrapFrame *tf);
-void sys_write(TrapFrame *tf);
-uint32_t sys_read(TrapFrame *tf);
+int32_t sys_write(TrapFrame *tf);
+int32_t sys_read(TrapFrame *tf);
 
 int sys_sem_init(TrapFrame *tf);
 int sys_sem_post(TrapFrame *tf);
