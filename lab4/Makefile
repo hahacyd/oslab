@@ -5,8 +5,6 @@ os.img:
 	@cd kernel; make
 	@cd app; make
 	cat bootloader/bootloader.bin kernel/kMain.elf app/uMain.elf > os.img
-	objdump -d kernel/kMain.elf > kMain.s
-	objdump -d app/uMain.elf > uMain.s
 
 play: os.img
 	$(QEMU) -serial stdio os.img
