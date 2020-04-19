@@ -10,5 +10,5 @@ oslab
 ## 运行方式
 1. 运行代码所需的环境：*qemu*
 2. 选择一个lab进入，然后用 ```make``` 构建，```make play``` 执行，以lab3所实现的进程切换为例：进入lab3文件夹后，执行上述两个命令，你会看到如下界面：  
-![lab3](https://raw.githubusercontent.com/hahacyd/MarkdownPhotos/master/oslab/lab3.png?token=AFQ6KME4FDPUD4D3SU6ZIOC6TPMQK "lab3实验截图")  
+![lab3](https://raw.githubusercontent.com/hahacyd/MarkdownPhotos/master/oslab/lab3.png?token=AFQ6KMFZU6MY24SJRQHT3GS6TPNQM "lab3实验截图")  
 
