@@ -2,11 +2,6 @@
 #include "types.h"
 
 int uEntry(void) {
-
-	//printf("%x, %x, %x, %d, %d, %d\n", 10, 0xffffffff, 0x80000000, 0xedf01, -32768, 102030);
-
-	//printf("dyd:%d\n", 512);
-	//char x[] = "Hello, welcome to OSlab! I'm the body of the game. Bootblock loads me to the mem";
 	printf("printf test begin...\n");
 	printf("the answer should be:\n");
 	printf("#######################################################\n");

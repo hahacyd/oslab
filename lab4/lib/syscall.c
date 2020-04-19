@@ -38,28 +38,21 @@ int exit()
 }
 int sem_init(sem_t *sem, uint32_t value)
 {
-	//printf("sem_init:sem = %d\n", *sem);
-
 	int x = syscall(__NR_sem_init, (uint32_t)sem, value, 1);
-	//printf("sem_init:sem = %d\n", *sem);
 	return x;
 }
 int sem_post(sem_t *sem)
 {
-
 	return syscall(__NR_sem_post, (uint32_t)sem, 1, 1);
-	//return 1;
 }
 
 int sem_wait(sem_t *sem)
 {
 	return syscall(__NR_sem_wait, 1, 1, 1);
-	//return 1;
 }
 int sem_destroy(sem_t *sem)
 {
 	return syscall(__NR_sem_destroy, (uint32_t)sem, 1, 1);
-	//return 1;
 }
 void printd(int a)
 {
@@ -90,7 +83,7 @@ void printd(int a)
 	if (1 == flag_8)
 	{
 		buf[29] += 1;
-	} /**/
+	}
 	buf[100] = '\0';
 	prints(p);
 }
@@ -136,36 +129,9 @@ void prints(const char *s)
 	syscall(__NR_write, 1, (uint32_t)s, len);
 }
 
-/*void printf(const char *str, ...) {
-    char token;
-    va_list ap;
-    va_start(ap, str);
-    if (str == 0)
-        return;
-    while(*str != '\0') {
-    	if(*str == '%') {
-    	    token = *++str;
-    	    switch (token) {
-                case 'd': printd(va_arg(ap, int));   break;
-                case 's': prints(va_arg(ap, char*)); break;
-                case 'c': printc(va_arg(ap, int));   break;
-                case 'x': printx(va_arg(ap, int));   break;
-    	    }
-    	}
-    	else {
-            printc(*str);
-        }
-    	str++;
-    }
-    va_end(ap);
-}*/
-
 void printf(const char *format, ...)
 {
 	uint32_t *ap = (uint32_t *)(void *)&format + 1;
-
-	//ap += ((getpid() * PROC_MEMSZ) >> 2); //gdt表中的基地址偏移，给子函数传递正确的参数；
-
 	char *c = (void *)format;
 	int32_t d = 0;
 	for (; *c != '\0'; c++)
@@ -222,8 +188,6 @@ int scanfd(char *buf, int *res)
 		result += *buf - '0';
 		buf += 1;
 		stepCounter++;
-
-		//printf("x");
 	}
 	*res = (1 == negetiveFlag) ? (0 - result) : result;
 	return stepCounter;
@@ -253,7 +217,6 @@ int scanfx(char *buf, int *res)
 		}
 		buf += 1;
 		stepCounter++;
-		//printf("x");
 	}
 	if (1 == negetiveFlag)
 	{

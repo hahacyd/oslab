@@ -57,16 +57,6 @@ int fs_write(int fd,char* buf,int len){
 	asm volatile("movw %ax, %gs");
 	assert(fd == 1);
 	printkernel(buf,len);
-	//putChar(*buf);
-	//printkernel(buf, len);
-	//putChar('c');
-	//putChar('y');
-	//if (1 == fd)
-	//{
-	/*for(int i = 0;i < len;i++){
-			putChar(buf[i]);
-		}*/
-	//}
 	return len;
 }
 static void sys_write(struct TrapFrame *tf){
@@ -74,8 +64,6 @@ static void sys_write(struct TrapFrame *tf){
 }
 void syscallHandle(struct TrapFrame *tf) {
 	/* 实现系统调用*/
-
-	//asm volatile("mov %0,%%gs:" ::"a"(6 << 3));
 	switch (tf->eax)
 	{
 	case 4:
@@ -83,7 +71,7 @@ void syscallHandle(struct TrapFrame *tf) {
 		break;
 		default:{
 			return;
-		}/**/
+		}
 	}
 	//enterUserSpace(1);
 }
@@ -92,14 +80,6 @@ void GProtectFaultHandle(struct TrapFrame *tf){
 	assert(0);
 	return;
 }
-/*static char *i2A(int a) {
-	static char buf[30];
-	char *p = buf + sizeof(buf) - 1;
-	do {
-		*--p = '0' + a % 10;
-	} while (a /= 10);
-	return p;
-}*/
 #define SELECTOR(ss) (ss>>3)
 static void print_char(int row, int col, char c) {
 	asm ("movl %0, %%edi;"::"r"(((80 * row + col) * 2)):"%edi");

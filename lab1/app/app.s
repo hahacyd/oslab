@@ -62,10 +62,5 @@ movb $0x0c,%ah
 movb $0x21,%al
 movw %ax,%gs:(%edi)
 
-/*movl $((80*5 + 12)*2),%edi
-movb $0x0c,%ah
-movb $0x0a,%al
-movw %ax,%gs:(%edi)
-*/
 loop:
 	jmp loop

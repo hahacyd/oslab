@@ -55,28 +55,19 @@ void initSeg() {
 	tss.ss0  = KSEL(SEG_KDATA);
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
-
-	//tss.gs = KSEL(SEG_VEDIO);
-	/*uint16_t old_cs = 0,old_ss = 0;
-	uint32_t old_eip = 0, old_esp = 0;
-	uint16_t target_cs = IDT[]*/
-
 	/*设置正确的段寄存器*/
 
 	asm volatile("mov %0,%%eax;" ::"r"((uint32_t)KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%ds;");
 
 	//cs needn`t set
-	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KCODE)));
 	asm volatile("movw %ax,%fs;");
 
-	//asm volatile("mov %0,%%eax;" ::"i"(KSEL(SEG_KDATA)));
 	asm volatile("movw %ax,%es;");
 	asm volatile("movw %ax,%ss;");
 
 	asm volatile("mov %0,%%eax;" ::"r"(KSEL(SEG_VEDIO)));
 	asm volatile("movw %ax,%gs;");
-	/**/
 	lLdt(0);
 }
 #define SELECTOR(ss) (ss>>3)
@@ -101,7 +92,6 @@ void enterUserSpace(uint32_t entry) {
 		//asm volatile("pop %%esp;");
 		//asm volatile("pop %%ss;");
 	}*/
-	//asm volatile("pushl %esp");
 	asm volatile("pushl %0":: "r"(USEL(SEG_UDATA)));	// %ss
 	asm volatile("pushl %0":: "r"(128 << 20));			// %esp 128MB
 	asm volatile("pushfl"); //push eflags
@@ -119,12 +109,10 @@ void loadUMain(void) {
 		readSect((void*)buffer + 512 * (i - 1),i + 200);
 	}
 	struct ELFHeader* elf = (void*)buffer;	
-	//user = (void*)elf->entry;
 
 	struct ProgramHeader* ph = (void*)elf + elf->phoff;
 	struct ProgramHeader* eph = ph + elf->phnum;
 	int dest = 0,src = 0;
-	//int phnum = elf->phnum;
 	for(;ph < eph;ph++){
 		if(ph->type == 1){
 			dest = ph->vaddr;
@@ -142,7 +130,5 @@ void loadUMain(void) {
 			}
 		}
 	}
-	//user = (void*)elf->entry;
-	//user();
 	enterUserSpace(elf->entry);
 }

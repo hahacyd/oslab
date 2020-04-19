@@ -32,16 +32,6 @@ int32_t syscall(int num, uint32_t a1, uint32_t a2,
 	return ret;
 }
 
-/*static int count = 0;
-static void video_print(int row, int col, char c) {
-	row = count++;
-	count++;
-	asm ("movl %0, %%edi;"			: :"r"(((80 * row + col) * 2))  :"%edi");
-	asm ("movw %0, %%eax;"			: :"r"(0x0c00|c) 				:"%eax");
-	asm ("movw %%ax, %%gs:(%%edi);" : : 							:"%edi");
-	while(1);
-}
-*/
 void putchar_user(char ch);
 typedef enum {
 	str = 0,
@@ -105,9 +95,8 @@ void printf(const char *format, ...)
 		else if (str == state)
 		{
 			buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
-		} /**/
+		}
 		else if(word == state){
-			//buf_ptr += append(sys_buffer + buf_ptr, (char *)(*ap++));
 			sys_buffer[buf_ptr++] = *ap++;
 		}
 	}
@@ -122,10 +111,6 @@ void putchar_user(char ch)
 {
 	syscall(4, 1, (int)&ch, 1, 0, 0);
 }
-/*static void sys_write(struct TrapFrame *tf){
-
-	tf->eax = fs_write(tf->ebx,tf->ecx,tf->edx);
-}*/
 int i2A(int a, char **result)
 {
 	static char buf[31];
@@ -176,28 +161,6 @@ int i2X(uint32_t n, char **result)
 	char *p = buf + sizeof(buf) - 1;
 	int count = 0;
 	int i = 0;
-	/*if (0x80000000 == n)
-	{
-		for (int i = 0; i < 8; i++)
-		{
-			*(--p) = 'f';
-		}
-		*(--p) = 'x';
-		*(--p) = '0';
-		*(--p) = '-';
-		p = p - 9;
-		memcpy(p, "80000000", 8);
-		count = 8;
-		buf[30] = '\0';
-		*result = p;
-		return count;
-	}*/
-	//uint8_t flag = 0;
-	/*if (n < 0)
-	{
-		flag = 1;
-		n = -n;
-	}*/
 	do
 	{
 		count++;
@@ -226,13 +189,6 @@ int i2X(uint32_t n, char **result)
 			*(--p) = '0' + i;
 		}
 	} while (n /= 16);
-	/**(--p) = 'x';
-	*(--p) = '0';
-	count += 2;*/
-	/*if(1 == flag){
-		*(--p) = '-';
-		count++;
-	}*/
 	buf[30] = '\0';
 	*result = p;
 	return count;
